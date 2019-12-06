@@ -32,11 +32,11 @@ const plugins: IPlugin[] = [
       // },
       pwa: pwa
         ? {
-          workboxPluginMode: 'InjectManifest',
-          workboxOptions: {
-            importWorkboxFrom: 'local',
-          },
-        }
+            workboxPluginMode: 'InjectManifest',
+            workboxOptions: {
+              importWorkboxFrom: 'local',
+            },
+          }
         : false,
       // default close dll, because issue https://github.com/ant-design/ant-design-pro/issues/4665
       // dll features https://webpack.js.org/plugins/dll-plugin/
@@ -122,6 +122,31 @@ export default {
           authority: ['admin', 'user'],
           routes: [
             {
+              name: 'activity',
+              // icon: 'smile',
+              path: '/activity',
+              component: './activity',
+            },
+            {
+              name: 'checkin',
+              // icon: 'smile',
+              path: '/checkin',
+              component: './checkin',
+            },
+            {
+              name: 'point',
+              icon: 'money-collect',
+              path: '/point',
+              routes: [
+                {
+                  name: 'point-pointRule',
+                  // icon: 'smile',
+                  path: '/point/pointRule',
+                  component: './pointRule',
+                },
+              ],
+            },
+            {
               name: 'organization',
               icon: 'team',
               path: '/organization',
@@ -132,31 +157,26 @@ export default {
                   path: '/organization/organization',
                   component: './organization',
                 },
+              ],
+            },
+            {
+              name: 'department',
+              icon: 'team',
+              path: '/department',
+              routes: [
                 {
-                  name: 'organization-checkin',
+                  name: 'department-department',
                   // icon: 'smile',
-                  path: '/organization/checkin',
-                  component: './checkin',
-                },
-                {
-                  name: 'organization-department',
-                  // icon: 'smile',
-                  path: '/organization/department',
+                  path: '/department/department',
                   component: './department',
                 },
-              ]
+              ],
             },
             {
               name: 'content',
               icon: 'table',
               path: '/content',
               routes: [
-                {
-                  name: 'content-activity',
-                  // icon: 'smile',
-                  path: '/content/activity',
-                  component: './activity',
-                },
                 {
                   name: 'content-topic',
                   // icon: 'smile',
@@ -175,21 +195,7 @@ export default {
                   path: '/content/apply',
                   component: './apply',
                 },
-              ]
-            },
-
-            {
-              name: 'point',
-              icon: 'money-collect',
-              path: '/point',
-              routes: [
-                {
-                  name: 'point-pointRule',
-                  // icon: 'smile',
-                  path: '/point/pointRule',
-                  component: './pointRule',
-                },
-              ]
+              ],
             },
 
             {
@@ -203,7 +209,7 @@ export default {
                   path: '/userManger/userManger',
                   component: './userManger',
                 },
-              ]
+              ],
             },
             {
               component: '404',

@@ -1,13 +1,27 @@
-import { Form, Input, Modal, Upload, Icon, InputNumber, Select, TreeSelect, Switch, DatePicker } from 'antd';
+import {
+  Form,
+  Input,
+  Modal,
+  Upload,
+  Icon,
+  InputNumber,
+  Select,
+  TreeSelect,
+  Switch,
+  DatePicker,
+} from 'antd';
 
 import { FormComponentProps } from 'antd/es/form';
 import React, { useState, useEffect } from 'react';
 import { AddParams, TableListItem } from '../data.d';
 import { detail, departmentAll } from '../service';
 import moment from 'moment';
+import { Common_Dictionary } from '@/services/common';
+import Quill from '@/components/Quill/index';
+import AMap from '@/components/AMap/index';
 
 const FormItem = Form.Item;
-const Option = Select.Option
+const Option = Select.Option;
 
 interface CreateFormProps extends FormComponentProps {
   activeStatus: { [key: string]: string };
@@ -31,14 +45,18 @@ const CreateForm: React.FC<CreateFormProps> = props => {
     values,
     handleUpdate,
     activeStatus,
-    serviceType
+    serviceType,
   } = props;
 
   const [options, setOptions] = useState();
+  const [activeType, setActiveType] = useState();
   const [imageUrl, setImageUrl] = useState('');
   const [thumnail, setThumnail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [info, setInfo] = useState();
+  const [info, setInfo] = useState({});
+  const [lines, setLines] = useState('');
+  const [content, setContent] = useState('');
+  const [latlngs, setLatlngs] = useState();
 
   useEffect(() => {
     departmentAll().then((res: ResParams<TableListItem>) => {
@@ -65,6 +83,12 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       }
     });
 
+    Common_Dictionary('PARTY_ACTIVITY_ACTIVETYPE').then(
+      (res: ResParams<{ [propName: string]: string }>) => {
+        setActiveType(res.data);
+      },
+    );
+
     if (hasVal) {
       // 修改加载数据
       let id = values ? values.id : '';
@@ -82,17 +106,23 @@ const CreateForm: React.FC<CreateFormProps> = props => {
   const okHandle = () => {
     form.validateFields((err, fieldsValue: AddParams) => {
       if (err) return;
-      fieldsValue.begin = moment(fieldsValue.begin).format('YYYY-MM-DD HH:mm:ss')
-      fieldsValue.end = moment(fieldsValue.end).format('YYYY-MM-DD HH:mm:ss')
+      fieldsValue.lines = lines;
+      fieldsValue.content = content;
+      if (latlngs) {
+        fieldsValue.latlngs = latlngs;
+        fieldsValue.mapabled = true;
+      }
+      fieldsValue.begin = moment(fieldsValue.begin).format('YYYY-MM-DD HH:mm');
+      fieldsValue.end = moment(fieldsValue.end).format('YYYY-MM-DD HH:mm');
       fieldsValue.image = imageUrl;
       fieldsValue.thumnail = thumnail;
       fieldsValue.fileType = 'IMAGE';
       fieldsValue.menu = 2;
       fieldsValue.enabled = 'true';
-      setLoading(false)
+      setLoading(false);
       setImageUrl('');
       setThumnail('');
-      form.resetFields();      
+      form.resetFields();
       if (hasVal) {
         //修改的
         fieldsValue.id = info.id;
@@ -111,8 +141,8 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       return;
     }
     if (info.file.status === 'done') {
-      console.log(info)
-      const url = info.file.response.data.image
+      console.log(info);
+      const url = info.file.response.data.image;
       if (type === 'image') {
         setImageUrl(url);
       } else {
@@ -120,6 +150,10 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       }
       setLoading(false);
     }
+  };
+
+  const saveLatlngs = (arr: number[]) => {
+    setLatlngs(arr);
   };
 
   const uploadButton = (
@@ -175,17 +209,41 @@ const CreateForm: React.FC<CreateFormProps> = props => {
               console.log(e);
             }}
           >
-            {
-              info && Object.keys(serviceType).map(
+            {Object.keys(serviceType).map(
+              (item: any): JSX.Element => {
+                return (
+                  <Option key={item} value={item}>
+                    {serviceType[item]}
+                  </Option>
+                );
+              },
+            )}
+          </Select>,
+        )}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="活动类型">
+        {form.getFieldDecorator('activeType', {
+          rules: [{ required: true, message: '请选择' }],
+          initialValue: info && info.activeType,
+        })(
+          <Select
+            // mode="multiple"
+            style={{ width: '100%' }}
+            placeholder="请选择"
+            onChange={e => {
+              console.log(e);
+            }}
+          >
+            {activeType &&
+              Object.keys(activeType).map(
                 (item: any): JSX.Element => {
                   return (
                     <Option key={item} value={item}>
-                      {serviceType[item]}
+                      {activeType[item]}
                     </Option>
                   );
                 },
-              )
-            }
+              )}
           </Select>,
         )}
       </FormItem>
@@ -207,13 +265,32 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           ></TreeSelect>,
         )}
       </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="乘车路线">
+        {form.getFieldDecorator('lines', {
+          // rules: [{ required: true, message: '请输入！', min: 1 }],
+        })(
+          <Quill
+            val={info.lines || lines}
+            handleQuillChange={value => {
+              setLines(value);
+            }}
+          />,
+        )}
+      </FormItem>
+      <br />
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="内容">
         {form.getFieldDecorator('content', {
-          rules: [{ required: true, message: '请输入！', min: 1 }],
-          initialValue: info && info.content,
-        })(<Input.TextArea rows={5} placeholder="请输入" />)}
+          // rules: [{ required: true, message: '请输入！', min: 1 }],
+        })(
+          <Quill
+            val={info.content || content}
+            handleQuillChange={value => {
+              setContent(value);
+            }}
+          />,
+        )}
       </FormItem>
-      
+      <br />
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="人数上限">
         {form.getFieldDecorator('limit', {
           rules: [{ required: true, message: '请输入' }],
@@ -223,28 +300,23 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="开始时间">
         {form.getFieldDecorator('begin', {
           initialValue: info ? moment(info.begin) : null,
-          rules: [{ type: 'object', required: true, message: '请选择' }]
+          rules: [{ type: 'object', required: true, message: '请选择' }],
         })(<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="结束时间">
         {form.getFieldDecorator('end', {
           initialValue: info ? moment(info.end) : null,
-          rules: [{ type: 'object', required: true, message: '请选择' }]
+          rules: [{ type: 'object', required: true, message: '请选择' }],
         })(<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="首页推荐">
         {form.getFieldDecorator('recommend', {
           rules: [{ required: true, message: '请输入' }],
-          valuePropName:'checked',
+          valuePropName: 'checked',
           initialValue: info && info.recommend,
         })(<Switch />)}
       </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="图片"
-        extra="请上传图片"
-      >
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="图片" extra="请上传图片">
         {form.getFieldDecorator('backgroundPicture', {
           // rules: [{ required: true, message: '请上传' }],
           // initialValue: info && info.primary,
@@ -259,15 +331,20 @@ const CreateForm: React.FC<CreateFormProps> = props => {
               Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
             }}
             // beforeUpload={beforeUpload}
-            onChange={(e) => handleChange(e, 'image')}
+            onChange={e => handleChange(e, 'image')}
           >
             {imageUrl && !loading ? (
               <img src={imageUrl} alt="avatar" style={{ width: '100%' }} />
             ) : (
-                uploadButton
-              )}
+              uploadButton
+            )}
           </Upload>,
         )}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="位置坐标">
+        {form.getFieldDecorator('latlngs', {
+          valuePropName: 'latlngs',
+        })(<AMap saveLatlngs={saveLatlngs}></AMap>)}
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
@@ -289,13 +366,13 @@ const CreateForm: React.FC<CreateFormProps> = props => {
               Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
             }}
             // beforeUpload={beforeUpload}
-            onChange={(e) => handleChange(e, 'thumnail')}
+            onChange={e => handleChange(e, 'thumnail')}
           >
             {thumnail && !loading ? (
               <img src={thumnail} alt="avatar" style={{ width: '100%' }} />
             ) : (
-                uploadButton
-              )}
+              uploadButton
+            )}
           </Upload>,
         )}
       </FormItem>

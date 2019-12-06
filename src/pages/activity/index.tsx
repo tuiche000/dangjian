@@ -1,4 +1,18 @@
-import { Button, Card, Col, Divider, Form, Input, Row, message, Popover } from 'antd';
+import {
+  Button,
+  Card,
+  Col,
+  Divider,
+  Form,
+  Input,
+  Row,
+  message,
+  Popover,
+  Dropdown,
+  Icon,
+  Menu,
+  Popconfirm,
+} from 'antd';
 import React, { Component, Fragment } from 'react';
 
 import { Dispatch, Action } from 'redux';
@@ -10,6 +24,7 @@ import { StateType } from './model';
 import CreateForm from './components/CreateForm';
 import ModalComponent from './components/ModalComponent';
 import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
+import DetailTable from './components/DetailDrawer';
 import { TableListItem, TableListPagination, TableListParams, AddParams } from './data.d';
 import { notice, qrcode } from './service';
 import { Common_Enum } from '@/services/common';
@@ -17,10 +32,6 @@ import { Common_Enum } from '@/services/common';
 import styles from './style.less';
 
 const FormItem = Form.Item;
-const getValue = (obj: { [x: string]: string[] }) =>
-  Object.keys(obj)
-    .map(key => obj[key])
-    .join(',');
 
 interface TableListProps extends FormComponentProps {
   dispatch: Dispatch<
@@ -39,10 +50,11 @@ interface TableListState {
   modalVisible: boolean;
   updateModalVisible: boolean;
   noticeModalVisible: boolean;
+  drawerVisible: boolean;
   selectedRows: TableListItem[];
   formValues: { [key: string]: string };
   stepFormValues: Partial<TableListItem>;
-  type: 'add' | 'updata';
+  type: 'add' | 'updata' | 'check' | 'apply';
   activeStatus: { [key: string]: string };
   serviceType: { [key: string]: string };
   pageNo: number;
@@ -80,7 +92,7 @@ class TableList extends Component<TableListProps, TableListState> {
     serviceType: {},
     pageNo: 1,
     pageSize: 10,
-    qrcode: ''
+    qrcode: '',
   };
 
   columns: StandardTableColumnProps[] = [
@@ -115,44 +127,105 @@ class TableList extends Component<TableListProps, TableListState> {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <Popover content={(
-            <div style={{ width: '100px', height: '100px' }}>
-              <img src={this.state.qrcode} style={{ width: '100px', height: '100px' }} alt="" />
-            </div>
-          )} trigger="click">
-            <a onClick={() => this.downQr(record)}>生成二维码</a>
-          </Popover>
-          <Divider type="vertical" />
-          <a onClick={() => this.noticeVisible(true, record)}>发送短信</a>
-          <Divider type="vertical" />
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
           <Divider type="vertical" />
-          <a onClick={() => this.handleDel(record.id)}>删除</a>
+          <Popconfirm
+            title="确定吗?"
+            onConfirm={() => this.handleDel(record.id)}
+            okText="是"
+            cancelText="否"
+          >
+            <a>删除</a>
+          </Popconfirm>
+          <Divider type="vertical" />
+          <Dropdown
+            placement="topRight"
+            trigger={['click']}
+            overlay={
+              <Menu>
+                <Menu.Item>
+                  <a onClick={() => this.noticeVisible(true, record)}>发送短信</a>
+                </Menu.Item>
+                <Menu.Item>
+                  <Popover
+                    content={
+                      this.state.qrcode ? (
+                        <div style={{ width: '100px', height: '100px' }}>
+                          <img
+                            src={this.state.qrcode}
+                            style={{ width: '100px', height: '100px' }}
+                            alt=""
+                          />
+                        </div>
+                      ) : null
+                    }
+                    trigger="click"
+                  >
+                    <a onClick={() => this.downQr(record)}>活动二维码</a>
+                  </Popover>
+                </Menu.Item>
+                <Menu.Item>
+                  <Popover
+                    content={
+                      <div style={{ width: '100px', height: '100px' }}>
+                        <img
+                          src={this.state.qrcode}
+                          style={{ width: '100px', height: '100px' }}
+                          alt=""
+                        />
+                      </div>
+                    }
+                    trigger="click"
+                  >
+                    <a onClick={() => this.downQr(record, 'CHECKIN')}>签到二维码</a>
+                  </Popover>
+                </Menu.Item>
+                <Menu.Item>
+                  <a onClick={() => this.handleDrawerVisible(true, record, 'check')}>
+                    签到/签退记录
+                  </a>
+                </Menu.Item>
+                <Menu.Item>
+                  <a onClick={() => this.handleDrawerVisible(true, record, 'apply')}>报到记录</a>
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <a className="ant-dropdown-link" href="#">
+              更多 <Icon type="down" />
+            </a>
+          </Dropdown>
         </Fragment>
       ),
     },
   ];
 
   async componentDidMount() {
-    const activeStatus: ResParams<{ [propName: string]: string }> = await Common_Enum('ACTIVE_STATUS');
-    const serviceType: ResParams<{ [propName: string]: string }> = await Common_Enum('SERVICE_TYPE');
+    const activeStatus: ResParams<{ [propName: string]: string }> = await Common_Enum(
+      'ACTIVE_STATUS',
+    );
+    const serviceType: ResParams<{ [propName: string]: string }> = await Common_Enum(
+      'SERVICE_TYPE',
+    );
     this.setState({
       activeStatus: activeStatus.data,
-      serviceType: serviceType.data
-    })
+      serviceType: serviceType.data,
+    });
     this.handleQuery();
   }
 
-  async downQr(record: TableListItem) {
-    const res = await qrcode({
+  async downQr(record: TableListItem, channel?: 'CHECKIN') {
+    let params = {
       code: record.code,
-      width: '100'
-    })
-    console.log(res)
+      width: '100',
+      channel,
+    };
+    const res = await qrcode(params);
+    console.log(res);
     let url = URL.createObjectURL(res);
     this.setState({
-      qrcode: url
-    })
+      qrcode: url,
+    });
   }
 
   async GET_notice(record: TableListItem) {
@@ -288,6 +361,18 @@ class TableList extends Component<TableListProps, TableListState> {
     });
   };
 
+  handleDrawerVisible = (
+    flag?: boolean,
+    record?: Partial<TableListItem>,
+    type?: 'apply' | 'check',
+  ) => {
+    this.setState({
+      drawerVisible: !!flag,
+      stepFormValues: record || {},
+      type: type || 'add',
+    });
+  };
+
   handleQuery = (json?: TableListParams) => {
     const { dispatch } = this.props;
     const { pageNo, pageSize } = this.state;
@@ -329,13 +414,11 @@ class TableList extends Component<TableListProps, TableListState> {
     });
   };
 
-  handleNotice = async (fields: {
-    departments: string;
-  }) => {
-    const res:ResParams2 = await notice({
+  handleNotice = async (fields: { departments: string }) => {
+    const res: ResParams2 = await notice({
       activeId: this.state.stepFormValues.id,
-      departmentIds: fields.departments
-    })
+      departmentIds: fields.departments,
+    });
     if (res.code === '0') {
       message.success('发送成功');
       this.setState({
@@ -343,7 +426,7 @@ class TableList extends Component<TableListProps, TableListState> {
         stepFormValues: {},
       });
     }
-  }
+  };
 
   renderSimpleForm() {
     const { form } = this.props;
@@ -383,7 +466,13 @@ class TableList extends Component<TableListProps, TableListState> {
 
     const { type } = this.state;
 
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues, noticeModalVisible } = this.state;
+    const {
+      selectedRows,
+      modalVisible,
+      updateModalVisible,
+      stepFormValues,
+      noticeModalVisible,
+    } = this.state;
 
     const parentMethods = {
       handleAdd: this.handleAdd,
@@ -422,15 +511,19 @@ class TableList extends Component<TableListProps, TableListState> {
           </div>
         </Card>
         <CreateForm
-          {...parentMethods} hasVal={false} modalVisible={modalVisible}
+          {...parentMethods}
+          hasVal={false}
+          modalVisible={modalVisible}
           activeStatus={this.state.activeStatus}
           serviceType={this.state.serviceType}
         />
-        {
-          noticeModalVisible ? (
-            <ModalComponent handleAdd={this.handleNotice} handleModalVisible={this.noticeVisible} modalVisible={noticeModalVisible} ></ModalComponent>
-          ) : null
-        }
+        {noticeModalVisible ? (
+          <ModalComponent
+            handleAdd={this.handleNotice}
+            handleModalVisible={this.noticeVisible}
+            modalVisible={noticeModalVisible}
+          ></ModalComponent>
+        ) : null}
         {type == 'updata' ? (
           <CreateForm
             {...updateMethods}
@@ -440,6 +533,14 @@ class TableList extends Component<TableListProps, TableListState> {
             modalVisible={updateModalVisible}
             values={stepFormValues}
           />
+        ) : null}
+        {type == 'check' || type == 'apply' ? (
+          <DetailTable
+            values={stepFormValues}
+            type={type}
+            drawerVisible={this.state.drawerVisible}
+            handleDrawerVisible={this.handleDrawerVisible}
+          ></DetailTable>
         ) : null}
       </PageHeaderWrapper>
     );

@@ -1,6 +1,17 @@
 import request from '@/utils/request';
 import { TableListParams, AddParams } from './data.d';
 
+export async function audit(params: {
+  checkinId: string;
+  auditType: 'AUDITING' | 'REFUSED' | 'PASSED';
+  pointType: 'CHECKIN' | 'ACTIVE';
+}) {
+  return request(`/api/biz/checkin/audit`, {
+    method: 'POST',
+    params: params,
+  });
+}
+
 export async function detail(id: string) {
   return request(`/api/biz/checkin/${id}`, {
     method: 'GET',

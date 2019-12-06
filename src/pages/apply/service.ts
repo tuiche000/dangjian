@@ -3,9 +3,10 @@ import { TableListParams, AddParams } from './data.d';
 
 export async function userQuery() {
   return request('/api/biz/user/query', {
+    method: 'POST',
     params: {
       pageNo: 1,
-      pageSize: 999
+      pageSize: 999,
     },
   });
 }
@@ -16,8 +17,16 @@ export async function detail(id: string) {
   });
 }
 
-export async function query(params: TableListParams) {
+export async function query(
+  params: TableListParams,
+  data: {
+    activeId?: string;
+    keyword?: string;
+  } = {},
+) {
   return request('/api/biz/apply/query', {
+    method: 'POST',
+    data,
     params,
   });
 }

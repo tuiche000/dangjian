@@ -1,4 +1,4 @@
-import { Button, Card, Col, Divider, Form, Input, Row, message } from 'antd';
+import { Button, Card, Col, Divider, Form, Input, Row, message, Popconfirm } from 'antd';
 import React, { Component, Fragment } from 'react';
 
 import { Dispatch, Action } from 'redux';
@@ -7,18 +7,19 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { SorterResult } from 'antd/es/table';
 import { connect } from 'dva';
 import { StateType } from './model';
-import CreateForm from './components/CreateForm';
+// import CreateForm from './components/CreateForm';
 import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
 import { TableListItem, TableListPagination, TableListParams, AddParams } from './data.d';
 import { Common_Enum } from '@/services/common';
+import { audit } from './service';
 
 import styles from './style.less';
 
 const FormItem = Form.Item;
-const getValue = (obj: { [x: string]: string[] }) =>
-  Object.keys(obj)
-    .map(key => obj[key])
-    .join(',');
+// const getValue = (obj: { [x: string]: string[] }) =>
+//   Object.keys(obj)
+//     .map(key => obj[key])
+//     .join(',');
 
 interface TableListProps extends FormComponentProps {
   dispatch: Dispatch<
@@ -79,8 +80,8 @@ class TableList extends Component<TableListProps, TableListState> {
 
   columns: StandardTableColumnProps[] = [
     {
-      title: '报道人',
-      dataIndex: 'checkor',
+      title: '报到人',
+      dataIndex: 'checkorName',
     },
     {
       title: '报到类型',
@@ -92,7 +93,7 @@ class TableList extends Component<TableListProps, TableListState> {
       dataIndex: 'organizationName',
     },
     {
-      title: '报道时间',
+      title: '报到时间',
       dataIndex: 'checkinTime',
     },
     {
@@ -106,13 +107,26 @@ class TableList extends Component<TableListProps, TableListState> {
     },
     {
       title: '操作',
-      render: (text, record) => (
-        <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
-          {/* <Divider type="vertical" />
-          <a onClick={() => this.handleDel(record.id)}>删除</a> */}
-        </Fragment>
-      ),
+      render: (text, record) => {
+        return record.auditType == 'AUDITING' ? (
+          <Fragment>
+            <Popconfirm
+              title="通过审核吗？"
+              onConfirm={() => this.handleAudit(text, true)}
+              onCancel={() => this.handleAudit(text, false)}
+              okText="通过"
+              cancelText="拒绝"
+            >
+              <a>审核</a>
+            </Popconfirm>
+            {/* <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a> */}
+            {/* <Divider type="vertical" />
+              <a onClick={() => this.handleDel(record.id)}>删除</a> */}
+          </Fragment>
+        ) : (
+          <div></div>
+        );
+      },
     },
   ];
 
@@ -132,6 +146,18 @@ class TableList extends Component<TableListProps, TableListState> {
       this.setState({
         auditType: res.data,
       });
+    }
+  }
+
+  async handleAudit(record: TableListItem, boolean: boolean) {
+    const res: ResParams2 = await audit({
+      checkinId: record.id,
+      auditType: boolean ? 'PASSED' : 'REFUSED',
+      pointType: 'CHECKIN',
+    });
+    if (res.code == '0') {
+      message.success('操作成功');
+      this.handleQuery();
     }
   }
 
@@ -349,9 +375,9 @@ class TableList extends Component<TableListProps, TableListState> {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+              {/* <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
-              </Button>
+              </Button> */}
               {selectedRows.length > 0 && (
                 <span>
                   <Button type="danger" onClick={() => this.handleMenuClick({ key: 'remove' })}>
@@ -371,7 +397,7 @@ class TableList extends Component<TableListProps, TableListState> {
             />
           </div>
         </Card>
-        <CreateForm
+        {/* <CreateForm
           {...parentMethods}
           partyType={this.state.partyType}
           auditType={this.state.auditType}
@@ -387,7 +413,7 @@ class TableList extends Component<TableListProps, TableListState> {
             modalVisible={updateModalVisible}
             values={stepFormValues}
           />
-        ) : null}
+        ) : null} */}
       </PageHeaderWrapper>
     );
   }

@@ -5,32 +5,56 @@ export async function departmentAll() {
   return request('/api/biz/department/all');
 }
 
-export async function notice(params: {
-  activeId: string;
-  departmentIds?: string;
-}) {
+export async function notice(params: { activeId: string; departmentIds?: string }) {
   return request(`/api/biz/activity/notice/${params.activeId}`, {
     method: 'GET',
     params: {
-      departmentIds: params.departmentIds
-    }
+      departmentIds: params.departmentIds,
+    },
   });
 }
 
-export async function qrcode(params: {
-  code: string;
-  width?: string;
-} = {
-  code: '',
-  width: '100'
-  }) {
+export async function qrcode(
+  params: {
+    code: string;
+    width?: string;
+    channel: 'CHECKIN' | undefined;
+  } = {
+    code: '',
+    width: '100',
+    channel: 'CHECKIN',
+  },
+) {
+  let path = params.channel
+    ? `pages/huodongba/detail/index?channel=CHECKIN&code=${params.code}`
+    : `pages/huodongba/detail/index?code=${params.code}`;
   return request('/api/biz/wechat/limited', {
     method: 'POST',
     data: {
       ...params,
-      path: `pages/huodongba/detail/index?channel=CHECKIN&code=${params.code}`
+      path,
     },
-    responseType: 'blob'
+    responseType: 'blob',
+  });
+}
+
+export async function apply(
+  data: {
+    activeId?: string;
+    pageNo?: number;
+    pageSize?: number;
+  } = {},
+) {
+  return request('/api/biz/apply/query', {
+    method: 'POST',
+    data,
+  });
+}
+
+export async function check(params: { pageSize: number; pageNo: number; activeId: string }) {
+  return request(`/api/biz/activity/check`, {
+    data: params,
+    method: 'POST',
   });
 }
 

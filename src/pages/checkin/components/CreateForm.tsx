@@ -31,7 +31,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
     values,
     handleUpdate,
     partyType,
-    auditType
+    auditType,
   } = props;
 
   const [info, setInfo] = useState();
@@ -51,7 +51,8 @@ const CreateForm: React.FC<CreateFormProps> = props => {
   const okHandle = () => {
     form.validateFields((err, fieldsValue: AddParams) => {
       if (err) return;
-      fieldsValue.checkinTime = moment(fieldsValue.checkinTime).format('YYYY-MM-DD HH:mm:ss')
+      fieldsValue.checkinTime = null;
+      // fieldsValue.checkinTime = moment(fieldsValue.checkinTime).format('YYYY-MM-DD HH:mm:ss')
       form.resetFields();
       fieldsValue.enabled = true;
       if (hasVal) {
@@ -83,32 +84,34 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="报道人">
         {form.getFieldDecorator('checkor', {
           rules: [{ required: true, message: '请输入！', min: 2 }],
-          initialValue: info && info.checkor,
+          initialValue: info && info.checkorName,
         })(<Input placeholder="请输入" />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="报道类型">
         {form.getFieldDecorator('partyType', {
           rules: [{ required: true, message: '请输入！', min: 2 }],
           initialValue: info && info.partyType,
-        })(<Select
-          // mode="multiple"
-          style={{ width: '100%' }}
-          placeholder="请选择"
-          onChange={e => {
-            console.log(e);
-          }}
-        >
-          {partyType &&
-            Object.keys(partyType).map(
-              (item: any): JSX.Element => {
-                return (
-                  <Option key={item} value={item}>
-                    {partyType[item]}
-                  </Option>
-                );
-              },
-            )}
-        </Select>)}
+        })(
+          <Select
+            // mode="multiple"
+            style={{ width: '100%' }}
+            placeholder="请选择"
+            onChange={e => {
+              console.log(e);
+            }}
+          >
+            {partyType &&
+              Object.keys(partyType).map(
+                (item: any): JSX.Element => {
+                  return (
+                    <Option key={item} value={item}>
+                      {partyType[item]}
+                    </Option>
+                  );
+                },
+              )}
+          </Select>,
+        )}
       </FormItem>
       {/* <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="党组织">
         {form.getFieldDecorator('organization', {
@@ -139,8 +142,8 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="报到时间">
         {form.getFieldDecorator('checkinTime', {
           initialValue: info ? moment(info.checkinTime) : null,
-          rules: [{ type: 'object', required: true, message: '请选择' }]
-        })(<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />)}
+          rules: [{ type: 'object', required: true, message: '请选择' }],
+        })(<DatePicker disabled showTime format="YYYY-MM-DD HH:mm:ss" />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="发放积分">
         {form.getFieldDecorator('point', {
@@ -152,25 +155,27 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         {form.getFieldDecorator('auditType', {
           rules: [{ required: true, message: '请输入' }],
           initialValue: info && info.auditType,
-        })(<Select
-          // mode="multiple"
-          style={{ width: '100%' }}
-          placeholder="请选择"
-          onChange={e => {
-            console.log(e);
-          }}
-        >
-          {auditType &&
-            Object.keys(auditType).map(
-              (item: any): JSX.Element => {
-                return (
-                  <Option key={item} value={item}>
-                    {auditType[item]}
-                  </Option>
-                );
-              },
-            )}
-        </Select>)}
+        })(
+          <Select
+            // mode="multiple"
+            style={{ width: '100%' }}
+            placeholder="请选择"
+            onChange={e => {
+              console.log(e);
+            }}
+          >
+            {auditType &&
+              Object.keys(auditType).map(
+                (item: any): JSX.Element => {
+                  return (
+                    <Option key={item} value={item}>
+                      {auditType[item]}
+                    </Option>
+                  );
+                },
+              )}
+          </Select>,
+        )}
       </FormItem>
     </Modal>
   );

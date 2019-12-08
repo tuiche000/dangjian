@@ -123,13 +123,13 @@ export default {
           routes: [
             {
               name: 'activity',
-              // icon: 'smile',
+              icon: 'setting',
               path: '/activity',
               component: './activity',
             },
             {
               name: 'checkin',
-              // icon: 'smile',
+              icon: 'setting',
               path: '/checkin',
               component: './checkin',
             },

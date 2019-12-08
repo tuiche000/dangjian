@@ -50,7 +50,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
 
   const [options, setOptions] = useState();
   const [activeType, setActiveType] = useState();
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState([]);
   const [thumnail, setThumnail] = useState('');
   const [loading, setLoading] = useState(false);
   const [info, setInfo] = useState({});
@@ -95,7 +95,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       detail(id).then((res: ResParams<TableListItem>) => {
         if (res.code == '0') {
           console.log(res);
-          setImageUrl(res.data.image);
+          setImageUrl(res.data.photos);
           setThumnail(res.data.thumnail);
           setInfo(res.data);
         }
@@ -114,13 +114,17 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       }
       fieldsValue.begin = moment(fieldsValue.begin).format('YYYY-MM-DD HH:mm');
       fieldsValue.end = moment(fieldsValue.end).format('YYYY-MM-DD HH:mm');
-      fieldsValue.image = imageUrl;
+      fieldsValue.photos = [
+        {
+          image: imageUrl,
+        },
+      ];
       fieldsValue.thumnail = thumnail;
       fieldsValue.fileType = 'IMAGE';
       fieldsValue.menu = 2;
       fieldsValue.enabled = 'true';
       setLoading(false);
-      setImageUrl('');
+      setImageUrl([]);
       setThumnail('');
       form.resetFields();
       if (hasVal) {
@@ -165,6 +169,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
 
   return (
     <Modal
+      width="60%"
       destroyOnClose
       title={hasVal ? '编辑' : '新建'}
       visible={modalVisible}
@@ -195,6 +200,12 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           rules: [{ required: true, message: '请输入！', min: 2 }],
           initialValue: info && info.callphone,
         })(<Input type="number" placeholder="请输入" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="活动地址">
+        {form.getFieldDecorator('address', {
+          rules: [{ required: true, message: '请输入！', min: 2 }],
+          initialValue: info && info.address,
+        })(<Input.TextArea placeholder="请输入" />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="服务类型">
         {form.getFieldDecorator('serviceType', {

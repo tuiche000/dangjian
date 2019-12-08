@@ -24,8 +24,8 @@ export default class App extends React.Component {
         let res = [e.lnglat.lng, e.lnglat.lat];
         props.saveLatlngs([
           {
-            latitude: e.lnglat.lng,
-            longitude: e.lnglat.lat,
+            latitude: e.lnglat.lat,
+            longitude: e.lnglat.lng,
           },
         ]);
         self.setState({

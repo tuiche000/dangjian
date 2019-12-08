@@ -29,36 +29,37 @@ const codeMessage = {
  */
 const errorHandler = (error: { response: Response }) => {
   const { response } = error;
-  console.log('error', response)
+  console.log('error', response);
 
   if (response && response.status) {
-
     const errorText = response.statusText || codeMessage[response.status];
     const { status, url } = response;
 
-    if ((response.status == 401) && window.location.pathname != '/user/login') {
+    if (response.status == 401 && window.location.pathname != '/user/login') {
       Modal.error({
         title: '请求错误',
         okText: '去登录',
         content: '用户未登录或登录过期',
         onOk: () => {
-          window.location.replace(`/user/login?${stringify({
-            redirect: window.location.href,
-          })}`)
-        }
+          window.location.replace(
+            `/user/login?${stringify({
+              redirect: window.location.href,
+            })}`,
+          );
+        },
       });
       return response;
     }
 
-    if (response.status > 400) {
+    if (response.status >= 400) {
       response.json().then(res => {
         if (res.code !== '0') {
           notification.error({
             message: `请求错误 ${status}: ${response.url}`,
-            description: res.message
-          })
+            description: res.message,
+          });
         }
-      })
+      });
       return response;
     }
 
@@ -88,7 +89,7 @@ const request = extend({
 
 request.interceptors.request.use((url, options) => {
   if (/^\/api\/biz/.test(url)) {
-    url = 'http://visit.fothing.com' + url
+    url = 'http://visit.fothing.com' + url;
   }
   return {
     url,

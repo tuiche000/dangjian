@@ -10,6 +10,7 @@ export async function detail(id: string) {
 export async function query(params: TableListParams) {
   return request('/api/biz/user/query', {
     params,
+    method: 'POST',
   });
 }
 

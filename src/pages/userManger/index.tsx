@@ -1,4 +1,4 @@
-import { Button, Card, Col, Divider, Form, Input, Row, message } from 'antd';
+import { Button, Card, Col, Divider, Form, Input, Row, message, Select } from 'antd';
 import React, { Component, Fragment } from 'react';
 
 import { Dispatch, Action } from 'redux';
@@ -89,7 +89,7 @@ class TableList extends Component<TableListProps, TableListState> {
       dataIndex: 'phone',
     },
     {
-      title: '公司',
+      title: '单位',
       dataIndex: 'departmentName',
     },
     {
@@ -298,6 +298,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
   renderSimpleForm() {
     const { form } = this.props;
+    const { types } = this.state;
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -305,6 +306,23 @@ class TableList extends Component<TableListProps, TableListState> {
           <Col md={8} sm={24}>
             <FormItem label="关键字">
               {getFieldDecorator('keyword')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="报到类型">
+              {getFieldDecorator('partyType')(
+                <Select style={{ maxWidth: 220 }}>
+                  {Object.keys(types).length > 0
+                    ? Object.keys(types).map(item => {
+                        return (
+                          <Select.Option key={item} value={item}>
+                            {types[item]}
+                          </Select.Option>
+                        );
+                      })
+                    : null}
+                </Select>,
+              )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>

@@ -9,6 +9,7 @@ export interface TableListItem {
   primary: string;
   target: string;
   displayOrder: number;
+  auditType: 'AUDITING' | 'REFUSED' | 'PASSED';
 }
 
 export interface TableListPagination {

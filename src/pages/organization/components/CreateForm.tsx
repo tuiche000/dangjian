@@ -138,7 +138,7 @@ const MenuCreateForm: React.FC<CreateFormProps> = props => {
         {form.getFieldDecorator('displayOrder', {
           rules: [{ required: true, message: '请输入' }],
           initialValue: info && info.displayOrder,
-        })(<InputNumber min={1} max={99} placeholder="请输入" />)}
+        })(<InputNumber min={0} max={99} placeholder="请输入" />)}
       </FormItem>
     </Modal>
   );

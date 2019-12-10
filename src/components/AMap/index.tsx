@@ -12,7 +12,7 @@ export default class App extends React.Component {
     this.state = {
       lineActive: false,
       Slatlngs: [],
-      mapMake: [0, 0],
+      mapMake: props.latlngs[0]
     };
     this.amapEvents = {
       created: mapInstance => {
@@ -61,7 +61,7 @@ export default class App extends React.Component {
         self.props.save(latlngs, distance);
       },
     };
-    this.mapCenter = { longitude: 119.56589, latitude: 39.9092 };
+    this.mapCenter = props.latlngs[0]
   }
 
   pluginSearch(mapInstance) {

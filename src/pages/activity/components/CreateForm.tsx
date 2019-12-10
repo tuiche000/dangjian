@@ -19,6 +19,7 @@ import moment from 'moment';
 import { Common_Dictionary } from '@/services/common';
 import Quill from '@/components/Quill/index';
 import AMap from '@/components/AMap/index';
+import { file } from '@babel/types';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -50,10 +51,10 @@ const CreateForm: React.FC<CreateFormProps> = props => {
 
   const [options, setOptions] = useState();
   const [activeType, setActiveType] = useState();
-  const [imageUrl, setImageUrl] = useState([]);
+  const [imageUrl, setImageUrl] = useState('');
   const [thumnail, setThumnail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [info, setInfo] = useState({});
+  const [info, setInfo] = useState();
   const [lines, setLines] = useState('');
   const [content, setContent] = useState('');
   const [latlngs, setLatlngs] = useState();
@@ -94,8 +95,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       let id = values ? values.id : '';
       detail(id).then((res: ResParams<TableListItem>) => {
         if (res.code == '0') {
-          console.log(res);
-          setImageUrl(res.data.photos);
+          setImageUrl(res.data.photos[0].image);
           setThumnail(res.data.thumnail);
           setInfo(res.data);
         }
@@ -124,7 +124,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       fieldsValue.menu = 2;
       fieldsValue.enabled = 'true';
       setLoading(false);
-      setImageUrl([]);
+      setImageUrl('');
       setThumnail('');
       form.resetFields();
       if (hasVal) {
@@ -138,8 +138,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
     });
   };
 
-  const handleChange = (info: any, type: string) => {
-    console.log(info, type);
+  const handleChange = (info: any) => {
     if (info.file.status === 'uploading') {
       setLoading(true);
       return;
@@ -147,11 +146,21 @@ const CreateForm: React.FC<CreateFormProps> = props => {
     if (info.file.status === 'done') {
       console.log(info);
       const url = info.file.response.data.image;
-      if (type === 'image') {
-        setImageUrl(url);
-      } else {
-        setThumnail(url);
-      }
+      // let arr = imageUrl
+      // arr.push(url)
+      setThumnail(url);
+      setLoading(false);
+    }
+  };
+
+  const handleChangeList = (info: any) => {
+    if (info.file.status === 'uploading') {
+      setLoading(true);
+      return;
+    }
+    if (info.file.status === 'done') {
+      const url = info.file.response.data.image;
+      setImageUrl(url);
       setLoading(false);
     }
   };
@@ -220,7 +229,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
               console.log(e);
             }}
           >
-            {Object.keys(serviceType).map(
+            {serviceType && Object.keys(serviceType).map(
               (item: any): JSX.Element => {
                 return (
                   <Option key={item} value={item}>
@@ -281,7 +290,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           // rules: [{ required: true, message: '请输入！', min: 1 }],
         })(
           <Quill
-            val={info.lines || lines}
+            val={info ? info.lines : lines}
             handleQuillChange={value => {
               setLines(value);
             }}
@@ -294,7 +303,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           // rules: [{ required: true, message: '请输入！', min: 1 }],
         })(
           <Quill
-            val={info.content || content}
+            val={info ? info.content : content}
             handleQuillChange={value => {
               setContent(value);
             }}
@@ -342,20 +351,20 @@ const CreateForm: React.FC<CreateFormProps> = props => {
               Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
             }}
             // beforeUpload={beforeUpload}
-            onChange={e => handleChange(e, 'image')}
+            onChange={handleChangeList}
           >
             {imageUrl && !loading ? (
               <img src={imageUrl} alt="avatar" style={{ width: '100%' }} />
             ) : (
-              uploadButton
-            )}
+                uploadButton
+              )}
           </Upload>,
         )}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="位置坐标">
-        {form.getFieldDecorator('latlngs', {
-          valuePropName: 'latlngs',
-        })(<AMap saveLatlngs={saveLatlngs}></AMap>)}
+        {
+          (info && info.latlngs) ? <AMap saveLatlngs={saveLatlngs} latlngs={info.latlngs[0]}></AMap> : <AMap saveLatlngs={saveLatlngs} latlngs={[]}></AMap>
+        }
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
@@ -377,13 +386,13 @@ const CreateForm: React.FC<CreateFormProps> = props => {
               Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
             }}
             // beforeUpload={beforeUpload}
-            onChange={e => handleChange(e, 'thumnail')}
+            onChange={handleChange}
           >
             {thumnail && !loading ? (
               <img src={thumnail} alt="avatar" style={{ width: '100%' }} />
             ) : (
-              uploadButton
-            )}
+                uploadButton
+              )}
           </Upload>,
         )}
       </FormItem>

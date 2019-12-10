@@ -118,7 +118,7 @@ class TableList extends Component<TableListProps, TableListState> {
         <Fragment>
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
           <Divider type="vertical" />
-          <a onClick={() => this.handleDel(record.id)}>删除</a>
+          <a onClick={() => this.handleDel(record)}>{record.enabled ? '停用' : '启用'}</a>
         </Fragment>
       ),
     },
@@ -196,11 +196,14 @@ class TableList extends Component<TableListProps, TableListState> {
     }
   };
 
-  handleDel = (id: string): void => {
+  handleDel = (record: TableListItem): void => {
     const { dispatch } = this.props;
     dispatch({
       type: 'namespace_userManger/remove',
-      payload: id,
+      payload: {
+        id: record.id,
+        enabled: !record.enabled
+      },
       callback: (res: ResParams2) => {
         if (res.code === '0') {
           message.success('删除成功');

@@ -7,6 +7,18 @@ export async function detail(id: string) {
   });
 }
 
+export async function status(params: {
+  id: string;
+  enabled: boolean;
+}) {
+  return request(`/api/biz/user/status/${params.id}`, {
+    method: 'GET',
+    params: {
+      enabled: params.enabled
+    }
+  });
+}
+
 export async function query(params: TableListParams) {
   return request('/api/biz/user/query', {
     params,

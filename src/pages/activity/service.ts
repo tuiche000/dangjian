@@ -20,10 +20,10 @@ export async function qrcode(
     width?: string;
     channel: 'CHECKIN' | undefined;
   } = {
-    code: '',
-    width: '100',
-    channel: 'CHECKIN',
-  },
+      code: '',
+      width: '100',
+      channel: 'CHECKIN',
+    },
 ) {
   let path = params.channel
     ? `pages/huodongba/detail/index?channel=CHECKIN&code=${params.code}`
@@ -61,6 +61,18 @@ export async function check(params: { pageSize: number; pageNo: number; activeId
 export async function detail(id: string) {
   return request(`/api/biz/activity/${id}`, {
     method: 'GET',
+  });
+}
+
+export async function status(params: {
+  id: string;
+  enabled: boolean;
+}) {
+  return request(`/api/biz/activity/status/${params.id}`, {
+    method: 'GET',
+    params: {
+      enabled: params.enabled
+    }
   });
 }
 

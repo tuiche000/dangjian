@@ -1,6 +1,6 @@
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
-import { add, query, remove, update } from './service';
+import { add, query, remove, update, status } from './service';
 
 import { TableListData, TableListPagination } from './data.d';
 
@@ -60,7 +60,7 @@ const Model: ModelType = {
       if (callback) callback(response);
     },
     *remove({ payload, callback }, { call, put }) {
-      const response = yield call(remove, payload);
+      const response = yield call(status, payload);
       if (callback) callback(response);
     },
     *update({ payload, callback }, { call, put }) {

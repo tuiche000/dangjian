@@ -12,8 +12,9 @@ export interface TableListItem {
   target: string;
   displayOrder: number;
   department: number;
-  photos: string[];
+  photos: {image: string}[];
   address: string;
+  enabled: boolean;
 }
 
 export interface TableListPagination {

@@ -9,6 +9,7 @@ export interface TableListItem {
   primary: string;
   target: string;
   displayOrder: number;
+  enabled: boolean;
 }
 
 export interface TableListPagination {

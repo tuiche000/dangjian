@@ -122,7 +122,7 @@ class TableList extends Component<TableListProps, TableListState> {
       title: '人数上限',
       dataIndex: 'limit',
     },
-
+    
     {
       title: '操作',
       render: (text, record) => (
@@ -131,11 +131,11 @@ class TableList extends Component<TableListProps, TableListState> {
           <Divider type="vertical" />
           <Popconfirm
             title="确定吗?"
-            onConfirm={() => this.handleDel(record.id)}
+            onConfirm={() => this.handleDel(record)}
             okText="是"
             cancelText="否"
           >
-            <a>删除</a>
+            <a>{record.enabled ? '停用' : '启用'}</a>
           </Popconfirm>
           <Divider type="vertical" />
           <Dropdown
@@ -295,14 +295,17 @@ class TableList extends Component<TableListProps, TableListState> {
     }
   };
 
-  handleDel = (id: string): void => {
+  handleDel = (record: TableListItem): void => {
     const { dispatch } = this.props;
     dispatch({
       type: 'namespace_activity/remove',
-      payload: id,
+      payload: {
+        id: record.id,
+        enabled: !record.enabled
+      },
       callback: (res: ResParams2) => {
         if (res.code === '0') {
-          message.success('删除成功');
+          message.success('操作成功');
           this.handleQuery();
         }
       },
@@ -491,13 +494,13 @@ class TableList extends Component<TableListProps, TableListState> {
               <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
               </Button>
-              {selectedRows.length > 0 && (
+              {/* {selectedRows.length > 0 && (
                 <span>
                   <Button type="danger" onClick={() => this.handleMenuClick({ key: 'remove' })}>
                     批量删除
                   </Button>
                 </span>
-              )}
+              )} */}
             </div>
             <StandardTable
               rowKey="id"

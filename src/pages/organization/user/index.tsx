@@ -1,4 +1,4 @@
-import { Button, Card, Col, Divider, Form, Input, Row, message, Popconfirm } from 'antd';
+import { Button, Card, Col, Divider, Form, Input, Row, message, Select } from 'antd';
 import React, { Component, Fragment } from 'react';
 
 import { Dispatch, Action } from 'redux';
@@ -7,44 +7,40 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { SorterResult } from 'antd/es/table';
 import { connect } from 'dva';
 import { StateType } from './model';
-// import CreateForm from './components/CreateForm';
+import CreateForm from './components/CreateForm';
 import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
 import { TableListItem, TableListPagination, TableListParams, AddParams } from './data.d';
 import { Common_Enum } from '@/services/common';
-import { audit } from './service';
-import DetailDrawer from './components/DetailDrawer';
 
 import styles from './style.less';
 
 const FormItem = Form.Item;
-// const getValue = (obj: { [x: string]: string[] }) =>
-//   Object.keys(obj)
-//     .map(key => obj[key])
-//     .join(',');
+const getValue = (obj: { [x: string]: string[] }) =>
+  Object.keys(obj)
+    .map(key => obj[key])
+    .join(',');
 
 interface TableListProps extends FormComponentProps {
   dispatch: Dispatch<
     Action<
-      | 'namespace_checkin/add'
-      | 'namespace_checkin/fetch'
-      | 'namespace_checkin/remove'
-      | 'namespace_checkin/update'
+      | 'namespace_organization_user/add'
+      | 'namespace_organization_user/fetch'
+      | 'namespace_organization_user/remove'
+      | 'namespace_organization_user/update'
     >
   >;
   loading: boolean;
-  namespace_checkin: StateType;
+  namespace_organization_user: StateType;
 }
 
 interface TableListState {
-  drawerVisible: boolean;
   modalVisible: boolean;
   updateModalVisible: boolean;
   selectedRows: TableListItem[];
   formValues: { [key: string]: string };
   stepFormValues: Partial<TableListItem>;
-  type: 'add' | 'updata' | 'drawer';
-  partyType: { [key: string]: string };
-  auditType: { [key: string]: string };
+  type: 'add' | 'updata';
+  types: { [key: string]: string };
   pageNo: number;
   pageSize: number;
 }
@@ -52,120 +48,92 @@ interface TableListState {
 /* eslint react/no-multi-comp:0 */
 @connect(
   ({
-    namespace_checkin,
+    namespace_organization_user,
     loading,
   }: {
-    namespace_checkin: StateType;
+    namespace_organization_user: StateType;
     loading: {
       models: {
         [key: string]: boolean;
       };
     };
   }) => ({
-    namespace_checkin,
-    loading: loading.models.namespace_checkin,
+    namespace_organization_user,
+    loading: loading.models.namespace_organization_user,
   }),
 )
 class TableList extends Component<TableListProps, TableListState> {
   state: TableListState = {
-    drawerVisible: false,
     modalVisible: false,
     updateModalVisible: false,
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
     type: 'add',
-    partyType: {},
-    auditType: {},
+    types: {},
     pageNo: 1,
     pageSize: 10,
   };
 
   columns: StandardTableColumnProps[] = [
     {
-      title: '报到人',
-      dataIndex: 'checkorName',
+      title: '用户名',
+      dataIndex: 'username',
     },
     {
-      title: '报到类型',
-      dataIndex: 'partyType',
-      render: (val: string) => this.state.partyType[val],
+      title: '名字',
+      dataIndex: 'name',
     },
     {
-      title: '党组织',
-      dataIndex: 'organizationName',
+      title: '电话',
+      dataIndex: 'phone',
     },
     {
-      title: '报到时间',
-      dataIndex: 'checkinTime',
+      title: '单位',
+      dataIndex: 'departmentName',
     },
     {
-      title: '发放积分',
-      dataIndex: 'point',
+      title: '积分',
+      dataIndex: 'total',
     },
-    {
-      title: '审核状态',
-      dataIndex: 'auditType',
-      render: (val: string) => this.state.auditType[val],
-    },
+    // {
+    //   title: '报到类型',
+    //   dataIndex: 'partyType',
+    //   render: (val: string) => this.state.types[val],
+    // },
+    // {
+    //   title: '内容',
+    //   dataIndex: 'content',
+    //   render: (val: string) => {
+    //     return <div className="td-overflow">{val}</div>;
+    //   },
+    // },
+    // {
+    //   title: '发放积分',
+    //   dataIndex: 'point',
+    // },
     {
       title: '操作',
-      render: (text, record) => {
-        return record.auditType == 'AUDITING' ? (
-          <Fragment>
-            <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>{text}</a>
-            <Divider type="vertical" />
-            <Popconfirm
-              title="通过审核吗？"
-              onConfirm={() => this.handleAudit(text, true)}
-              onCancel={() => this.handleAudit(text, false)}
-              okText="通过"
-              cancelText="拒绝"
-            >
-              <a>审核</a>
-            </Popconfirm>
-            {/* <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a> */}
-            {/* <Divider type="vertical" />
-              <a onClick={() => this.handleDel(record.id)}>删除</a> */}
-          </Fragment>
-        ) : (
-            <div>
-              <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>查看</a>
-            </div>
-          );
-      },
+      render: (text, record) => (
+        <Fragment>
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.handleDel(record)}>{record.enabled ? '停用' : '启用'}</a>
+        </Fragment>
+      ),
     },
   ];
 
   componentDidMount() {
     this.handleQuery();
     this.fetchCommon_Enum('PARTY_TYPE');
-    this.fetchCommon_Enum('AUDIT_TYPE');
   }
 
   async fetchCommon_Enum(name: string) {
     const res: ResParams<{ [propName: string]: string }> = await Common_Enum(name);
-    if (name === 'PARTY_TYPE') {
-      this.setState({
-        partyType: res.data,
-      });
-    } else {
-      this.setState({
-        auditType: res.data,
-      });
-    }
-  }
-
-  async handleAudit(record: TableListItem, boolean: boolean) {
-    const res: ResParams2 = await audit({
-      checkinId: record.id,
-      auditType: boolean ? 'PASSED' : 'REFUSED',
-      pointType: 'CHECKIN',
+    this.setState({
+      types: res.data,
     });
-    if (res.code == '0') {
-      message.success('操作成功');
-      this.handleQuery();
-    }
   }
 
   handleStandardTableChange = (
@@ -183,7 +151,7 @@ class TableList extends Component<TableListProps, TableListState> {
     };
 
     dispatch({
-      type: 'namespace_checkin/fetch',
+      type: 'namespace_organization_user/fetch',
       payload: params,
     });
   };
@@ -195,7 +163,7 @@ class TableList extends Component<TableListProps, TableListState> {
       formValues: {},
     });
     dispatch({
-      type: 'namespace_checkin/fetch',
+      type: 'namespace_organization_user/fetch',
       payload: {},
     });
   };
@@ -210,7 +178,7 @@ class TableList extends Component<TableListProps, TableListState> {
         let arr = selectedRows.map(row => row.id);
         let ids = arr.join();
         dispatch({
-          type: 'namespace_checkin/remove',
+          type: 'namespace_organization_user/remove',
           payload: ids,
           callback: (res: ResParams2) => {
             if (res.code === '0') {
@@ -228,11 +196,14 @@ class TableList extends Component<TableListProps, TableListState> {
     }
   };
 
-  handleDel = (id: string): void => {
+  handleDel = (record: TableListItem): void => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'namespace_checkin/remove',
-      payload: id,
+      type: 'namespace_organization_user/remove',
+      payload: {
+        id: record.id,
+        enabled: !record.enabled
+      },
       callback: (res: ResParams2) => {
         if (res.code === '0') {
           message.success('删除成功');
@@ -266,7 +237,7 @@ class TableList extends Component<TableListProps, TableListState> {
       });
 
       dispatch({
-        type: 'namespace_checkin/fetch',
+        type: 'namespace_organization_user/fetch',
         payload: values,
       });
     });
@@ -275,14 +246,6 @@ class TableList extends Component<TableListProps, TableListState> {
   handleModalVisible = (flag?: boolean) => {
     this.setState({
       modalVisible: !!flag,
-    });
-  };
-
-  handleDrawerVisible = (flag?: boolean, record?: Partial<TableListItem>) => {
-    this.setState({
-      drawerVisible: !!flag,
-      stepFormValues: record || {},
-      type: record ? 'drawer' : 'add'
     });
   };
 
@@ -299,7 +262,7 @@ class TableList extends Component<TableListProps, TableListState> {
     const { dispatch } = this.props;
     const { pageNo, pageSize } = this.state;
     dispatch({
-      type: 'namespace_checkin/fetch',
+      type: 'namespace_organization_user/fetch',
       payload: {
         pageNo,
         pageSize,
@@ -311,7 +274,7 @@ class TableList extends Component<TableListProps, TableListState> {
   handleAdd = (fields: AddParams) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'namespace_checkin/add',
+      type: 'namespace_organization_user/add',
       payload: fields,
       callback: (response: ResParams2) => {
         if (response.code === '0') {
@@ -326,7 +289,7 @@ class TableList extends Component<TableListProps, TableListState> {
   handleUpdate = (fields: AddParams) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'namespace_checkin/update',
+      type: 'namespace_organization_user/update',
       payload: fields,
       callback: (res: ResParams2) => {
         message.success('修改成功');
@@ -338,6 +301,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
   renderSimpleForm() {
     const { form } = this.props;
+    const { types } = this.state;
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -346,6 +310,35 @@ class TableList extends Component<TableListProps, TableListState> {
             <FormItem label="关键字">
               {getFieldDecorator('keyword')(<Input placeholder="请输入" />)}
             </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="报到类型">
+              {getFieldDecorator('partyType')(
+                <Select style={{ maxWidth: 220 }}>
+                  <Select.Option value="">
+                    全部
+                  </Select.Option>
+                  <Select.Option value="CPC">
+                    党员
+                  </Select.Option>
+                </Select>,
+              )}
+            </FormItem>
+            {/* <FormItem label="报到类型">
+              {getFieldDecorator('partyType')(
+                <Select style={{ maxWidth: 220 }}>
+                  {Object.keys(types).length > 0
+                    ? Object.keys(types).map(item => {
+                        return (
+                          <Select.Option key={item} value={item}>
+                            {types[item]}
+                          </Select.Option>
+                        );
+                      })
+                    : null}
+                </Select>,
+              )}
+            </FormItem> */}
           </Col>
           <Col md={8} sm={24}>
             <span className={styles.submitButtons}>
@@ -368,7 +361,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
   render() {
     const {
-      namespace_checkin: { data },
+      namespace_organization_user: { data },
       loading,
     } = this.props;
 
@@ -390,9 +383,9 @@ class TableList extends Component<TableListProps, TableListState> {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              {/* <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
-              </Button> */}
+              </Button>
               {selectedRows.length > 0 && (
                 <span>
                   <Button type="danger" onClick={() => this.handleMenuClick({ key: 'remove' })}>
@@ -412,30 +405,14 @@ class TableList extends Component<TableListProps, TableListState> {
             />
           </div>
         </Card>
-        {/* <CreateForm
-          {...parentMethods}
-          partyType={this.state.partyType}
-          auditType={this.state.auditType}
-          hasVal={false}
-          modalVisible={modalVisible}
-        />
+        <CreateForm {...parentMethods} hasVal={false} modalVisible={modalVisible} />
         {type == 'updata' ? (
           <CreateForm
             {...updateMethods}
-            partyType={this.state.partyType}
-            auditType={this.state.auditType}
             hasVal={true}
             modalVisible={updateModalVisible}
             values={stepFormValues}
           />
-        ) : null} */}
-        {type == 'drawer' ? (
-          <DetailDrawer
-            partyType={this.state.partyType}
-            values={stepFormValues}
-            drawerVisible={this.state.drawerVisible}
-            handleDrawerVisible={this.handleDrawerVisible}
-          ></DetailDrawer>
         ) : null}
       </PageHeaderWrapper>
     );

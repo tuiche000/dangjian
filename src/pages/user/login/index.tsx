@@ -66,8 +66,8 @@ class Login extends Component<LoginProps, LoginState> {
       dispatch({
         type: 'userAndlogin/login',
         payload: {
-          clientId: '2sY5PeR7SQZe8YkZ6Eo4yW',
-          clientSecret: 'yUDX2fK3snvRoDhMUGDA6rrVhXmeNTtG',
+          clientId: '7GAfn2xXci8tvRN4zYnYy2',
+          clientSecret: 'oNGSxrlq5fA7BzyOv2c0ESafjF1NSE12',
           ...values,
           type,
         },

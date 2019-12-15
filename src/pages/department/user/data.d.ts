@@ -1,23 +1,15 @@
 export interface TableListItem {
   id: string;
-  code: string;
   menu: number;
   fileType: 'IMAGE' | 'VIDEO' | 'FILE';
   platformType: 'DEFAULT' | 'ANDROID' | 'IOS' | 'WAP' | 'WEB';
   name: string;
   slogan: string;
   targetType: string;
-  image: string;
-  thumnail: string;
+  primary: string;
   target: string;
   displayOrder: number;
-  department: number;
-  photos: {image: string}[];
-  address: string;
   enabled: boolean;
-  member: string;
-  point: string;
-  granted: boolean;
 }
 
 export interface TableListPagination {

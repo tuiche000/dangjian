@@ -51,6 +51,19 @@ export async function apply(
   });
 }
 
+export async function audit(
+  data: {
+    activity?: string;
+    member?: string;
+    point?: string;
+  } = {},
+) {
+  return request('/api/biz/apply/audit', {
+    method: 'POST',
+    data: [data],
+  });
+}
+
 export async function check(params: { pageSize: number; pageNo: number; activeId: string }) {
   return request(`/api/biz/activity/check`, {
     data: params,

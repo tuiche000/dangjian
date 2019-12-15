@@ -85,6 +85,10 @@ export default {
       component: '../layouts/BlankLayout',
       routes: [
         {
+          path: '/',
+          redirect: '/home'
+        },
+        {
           path: '/user',
           component: '../layouts/UserLayout',
           routes: [
@@ -116,11 +120,18 @@ export default {
           ],
         },
         {
-          path: '/',
+          path: '',
           component: '../layouts/BasicLayout',
-          Routes: ['src/pages/Authorized'],
-          authority: ['admin', 'user'],
+          // redirect: '/home',
+          // Routes: ['src/pages/Authorized'],
+          // authority: ['admin', 'user'],
           routes: [
+            {
+              name: 'home',
+              icon: 'home',
+              path: '/home',
+              component: './home',
+            },
             {
               name: 'activity',
               icon: 'setting',
@@ -138,6 +149,18 @@ export default {
               icon: 'money-collect',
               path: '/point',
               routes: [
+                {
+                  name: 'point-point',
+                  // icon: 'smile',
+                  path: '/point/point',
+                  component: './point',
+                },
+                {
+                  name: 'point-pointRank',
+                  // icon: 'smile',
+                  path: '/point/pointRank',
+                  component: './pointRank',
+                },
                 {
                   name: 'point-pointRule',
                   // icon: 'smile',
@@ -157,6 +180,12 @@ export default {
                   path: '/organization/organization',
                   component: './organization',
                 },
+                {
+                  name: 'organization-user',
+                  // icon: 'smile',
+                  path: '/organization/user',
+                  component: './organization/user',
+                },
               ],
             },
             {
@@ -169,6 +198,12 @@ export default {
                   // icon: 'smile',
                   path: '/department/department',
                   component: './department',
+                },
+                {
+                  name: 'department-user',
+                  // icon: 'smile',
+                  path: '/department/user',
+                  component: './department/user',
                 },
               ],
             },

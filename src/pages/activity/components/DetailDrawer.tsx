@@ -1,4 +1,4 @@
-import { Drawer, Divider, Form, Table, Pagination } from 'antd';
+import { Drawer, Divider, Form, Table, message, InputNumber } from 'antd';
 import React, { Component } from 'react';
 
 import { Dispatch } from 'redux';
@@ -7,7 +7,7 @@ import { StateType } from '../model';
 import { ConnectState } from '@/models/connect';
 import { FormComponentProps } from 'antd/es/form';
 import { TableListItem, TableListParams, TableListPagination } from '../data.d';
-import { check, apply } from '../service';
+import { check, apply, audit } from '../service';
 
 export interface UpdateFormProps extends FormComponentProps {
   handleDrawerVisible: (flag?: boolean, record?: Partial<TableListItem>) => void;
@@ -53,8 +53,8 @@ const pStyle = {
 )
 class DetailTable extends Component<UpdateFormProps, UpdateFormState> {
   static defaultProps = {
-    handleUpdate: () => {},
-    handleUpdateModalVisible: () => {},
+    handleUpdate: () => { },
+    handleUpdateModalVisible: () => { },
     values: {},
   };
 
@@ -129,6 +129,23 @@ class DetailTable extends Component<UpdateFormProps, UpdateFormState> {
     });
   }
 
+  POST_audit(params: {
+    activity?: string;
+    member?: string;
+    point?: string;
+  }) {
+    audit(params).then((res: ResParams2) => {
+      if (res.code == '0') {
+        message.success('发放成功');
+        this.POST_check({
+          activeId: params.activity,
+          pageSize: this.state.pageSize,
+          pageNo: this.state.pageNo,
+        });
+      }
+    })
+  }
+
   POST_apply(params: TableListParams) {
     apply(params).then((res: ResParams<any>) => {
       if (res.code == '0') {
@@ -162,6 +179,34 @@ class DetailTable extends Component<UpdateFormProps, UpdateFormState> {
         {
           title: '用户',
           dataIndex: 'memberName',
+        },
+        {
+          title: '积分发放',
+          dataIndex: 'socialType',
+          render: (text: 'CHECKOUT' | 'CHECKIN', record: TableListItem) => {
+            if (record.granted) {
+              return <div>已发放积分</div>
+            }
+            if (text == 'CHECKIN') return (
+              <div>
+                <a onClick={
+                  () => {
+                    this.POST_audit({
+                      activity: record.activity,
+                      member: record.member,
+                      point: record.point
+                    })
+                  }
+                }>发放积分</a>
+                <span style={{marginLeft: 10}}>
+                  <InputNumber min={0} defaultValue={record.point} onChange={(value: number) => {
+                  record.point = value
+                }} />
+                </span>
+
+              </div>
+            )
+          }
         },
       ];
     } else if (type == 'apply') {
@@ -198,7 +243,7 @@ class DetailTable extends Component<UpdateFormProps, UpdateFormState> {
         }}
         visible={drawerVisible}
       >
-        <p style={{ ...pStyle, marginBottom: 24 }}>修改记录</p>
+        <p style={{ ...pStyle, marginBottom: 24 }}>{type == 'check' ? '签到/签退记录' : '报到记录'}</p>
         {/* <p style={pStyle}>Personal</p> */}
         <Divider></Divider>
         <Table

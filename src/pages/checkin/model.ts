@@ -43,6 +43,7 @@ const Model: ModelType = {
   effects: {
     *fetch({ payload }, { call, put }) {
       const response: ResParams<TableListData> = yield call(query, payload);
+      console.log(response)
       yield put({
         type: 'save',
         payload: {

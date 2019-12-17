@@ -110,29 +110,27 @@ class TableList extends Component<TableListProps, TableListState> {
     },
     {
       title: '操作',
-      render: (text, record) => {
-        return record.auditType == 'AUDITING' ? (
+      render: (record) => {
+        let el = record.auditType == 'AUDITING' ? (
           <Fragment>
-            <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>{text}</a>
+            <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>查看</a>
             <Divider type="vertical" />
             <Popconfirm
               title="通过审核吗？"
-              onConfirm={() => this.handleAudit(text, true)}
-              onCancel={() => this.handleAudit(text, false)}
+              onConfirm={() => this.handleAudit(record, true)}
+              onCancel={() => this.handleAudit(record, false)}
               okText="通过"
               cancelText="拒绝"
             >
               <a>审核</a>
             </Popconfirm>
-            {/* <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a> */}
-            {/* <Divider type="vertical" />
-              <a onClick={() => this.handleDel(record.id)}>删除</a> */}
           </Fragment>
         ) : (
             <div>
               <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>查看</a>
             </div>
           );
+        return el;
       },
     },
   ];
@@ -297,12 +295,12 @@ class TableList extends Component<TableListProps, TableListState> {
 
   handleQuery = (json?: TableListParams) => {
     const { dispatch } = this.props;
-    const { pageNo, pageSize } = this.state;
+    // const { pageNo, pageSize } = this.state;
     dispatch({
       type: 'namespace_checkin/fetch',
       payload: {
-        pageNo,
-        pageSize,
+        // pageNo,
+        // pageSize,
         ...json,
       },
     });
@@ -371,6 +369,7 @@ class TableList extends Component<TableListProps, TableListState> {
       namespace_checkin: { data },
       loading,
     } = this.props;
+    console.log(data)
 
     const { type } = this.state;
 

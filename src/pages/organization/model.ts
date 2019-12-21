@@ -41,7 +41,10 @@ const Model: ModelType = {
 
   effects: {
     *fetch({ payload }, { call, put }) {
-      const response: ResParams<TableListItem[]> = yield call(query, payload);
+      const response: ResParams<TableListItem[]> = yield call(query, {
+        ...payload,
+        orgfrom: 'TREETS'
+      });
       // 递归
       function recursive(arr: any) {
         if (arr instanceof Array) {

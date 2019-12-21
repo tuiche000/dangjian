@@ -89,7 +89,7 @@ const request = extend({
 
 request.interceptors.request.use((url, options) => {
   if (/^\/api\/biz/.test(url)) {
-    url = 'http://visit.fothing.com' + url;
+    url = 'https://api.fothing.com' + url;
   }
   return {
     url,

@@ -89,9 +89,10 @@ export async function status(params: {
   });
 }
 
-export async function query(params: TableListParams) {
+export async function query(data: TableListParams) {
   return request('/api/biz/activity/query', {
-    params,
+    data,
+    method: 'POST'
   });
 }
 

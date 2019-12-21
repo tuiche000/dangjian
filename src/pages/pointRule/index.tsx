@@ -10,7 +10,7 @@ import { StateType } from './model';
 import CreateForm from './components/CreateForm';
 import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
 import { TableListItem, TableListPagination, TableListParams, AddParams } from './data.d';
-import { Common_Enum } from '@/services/common';
+import { Common_Enum, Common_Dictionary } from '@/services/common';
 
 import styles from './style.less';
 
@@ -41,6 +41,7 @@ interface TableListState {
   stepFormValues: Partial<TableListItem>;
   type: 'add' | 'updata';
   types: { [key: string]: string };
+  actTypes: { [key: string]: string };
   pageNo: number;
   pageSize: number;
 }
@@ -71,6 +72,7 @@ class TableList extends Component<TableListProps, TableListState> {
     stepFormValues: {},
     type: 'add',
     types: {},
+    actTypes: {},
     pageNo: 1,
     pageSize: 10,
   };
@@ -79,6 +81,9 @@ class TableList extends Component<TableListProps, TableListState> {
     {
       title: '名字',
       dataIndex: 'name',
+      render: (text) => {
+        return <span>{this.state.actTypes[text]}</span>
+      }
     },
     {
       title: '报到类型',
@@ -110,12 +115,19 @@ class TableList extends Component<TableListProps, TableListState> {
   componentDidMount() {
     this.handleQuery();
     this.fetchCommon_Enum('PARTY_TYPE');
+    this.fetchCommon_Dictionary('PARTY_ACTIVITY_ACTIVETYPE');
   }
 
   async fetchCommon_Enum(name: string) {
     const res: ResParams<{ [propName: string]: string }> = await Common_Enum(name);
     this.setState({
       types: res.data,
+    });
+  }
+  async fetchCommon_Dictionary(name: string) {
+    const res: ResParams<{ [propName: string]: string }> = await Common_Dictionary(name);
+    this.setState({
+      actTypes: res.data,
     });
   }
 

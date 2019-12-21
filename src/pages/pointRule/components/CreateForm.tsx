@@ -4,7 +4,7 @@ import { FormComponentProps } from 'antd/es/form';
 import React, { useState, useEffect } from 'react';
 import { AddParams, TableListItem } from '../data.d';
 import { detail } from '../service';
-import { Common_Enum } from '@/services/common';
+import { Common_Enum, Common_Dictionary } from '@/services/common';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -33,10 +33,14 @@ const CreateForm: React.FC<CreateFormProps> = props => {
 
   const [info, setInfo] = useState();
   const [types, setTypes] = useState();
+  const [actTypes, setActTypes] = useState();
 
   useEffect(() => {
     Common_Enum('PARTY_TYPE').then((res: ResParams<{ [propName: string]: string }>) => {
       setTypes(res.data);
+    });
+    Common_Dictionary('PARTY_ACTIVITY_ACTIVETYPE').then((res: ResParams<{ [propName: string]: string }>) => {
+      setActTypes(res.data);
     });
     if (hasVal) {
       // 修改加载数据
@@ -82,9 +86,27 @@ const CreateForm: React.FC<CreateFormProps> = props => {
     >
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="名字">
         {form.getFieldDecorator('name', {
-          rules: [{ required: true, message: '请输入！', min: 2 }],
+          // rules: [{ required: true, message: '请输入！', min: 2 }],
           initialValue: info && info.name,
-        })(<Input placeholder="请输入" />)}
+        })(<Select
+          // mode="multiple"
+          style={{ width: '100%' }}
+          placeholder="请选择"
+          onChange={e => {
+            console.log(e);
+          }}
+        >
+          {actTypes &&
+            Object.keys(actTypes).map(
+              (item: any): JSX.Element => {
+                return (
+                  <Option key={item} value={item}>
+                    {actTypes[item]}
+                  </Option>
+                );
+              },
+            )}
+        </Select>)}
       </FormItem>
       {/* <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="报道类型">
         {form.getFieldDecorator('partyType', {
@@ -94,7 +116,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       </FormItem> */}
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="报道类型">
         {form.getFieldDecorator('partyType', {
-          rules: [{ required: true, message: '请选择' }],
+          // rules: [{ required: true, message: '请选择' }],
           initialValue: info && info.partyType,
         })(
           <Select
@@ -120,7 +142,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="内容">
         {form.getFieldDecorator('content', {
-          rules: [{ required: true, message: '请输入！', min: 1 }],
+          // rules: [{ required: true, message: '请输入！', min: 1 }],
           initialValue: info && info.content,
         })(<TextArea rows={3} placeholder="请输入" />)}
       </FormItem>

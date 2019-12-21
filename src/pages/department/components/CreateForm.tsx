@@ -1,4 +1,4 @@
-import { Form, Input, Modal, Icon, InputNumber, TreeSelect } from 'antd';
+import { Form, Input, Modal, Icon, InputNumber, TreeSelect, Select } from 'antd';
 
 import { FormComponentProps } from 'antd/es/form';
 import React, { useState, useEffect } from 'react';
@@ -133,6 +133,23 @@ const MenuCreateForm: React.FC<CreateFormProps> = props => {
             }}
           ></TreeSelect>,
         )}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="报到组织">
+        {form.getFieldDecorator('orgfrom', {
+          initialValue: "CHECKIN"
+        })(<Select
+          disabled
+          // mode="multiple"
+          style={{ width: '100%' }}
+          placeholder="请选择"
+          onChange={e => {
+            console.log(e);
+          }}
+        >
+          <Select.Option value="CHECKIN">
+            街道组织
+          </Select.Option>
+        </Select>)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="显示顺序">
         {form.getFieldDecorator('displayOrder', {

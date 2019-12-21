@@ -439,7 +439,7 @@ class TableList extends Component<TableListProps, TableListState> {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="关键字">
-              {getFieldDecorator('keyword')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('keyword')(<Input placeholder="标题，内容，描述" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>

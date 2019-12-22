@@ -84,12 +84,14 @@ export default class Home extends React.Component<TableListProps, DataState> {
         boardtype: 'CHECKIN_ORGANIZATION',
         pageSize: 5
       });
+      console.log(board)
+      console.log(board2)
       this.setState({
         count: count.data,
         activity: activity.data,
         checkin: checkin.data,
-        board: board.data.reresult,
-        board2: board2.data.reresult,
+        board: board.data.result,
+        board2: board2.data.result,
       })
     } catch {
       console.log('error')
@@ -120,8 +122,8 @@ export default class Home extends React.Component<TableListProps, DataState> {
     const columns = [
       {
         title: '名次',
-        dataIndex: 'id',
-        key: 'id',
+        dataIndex: 'range',
+        key: 'range',
       },
       {
         title: '名称',
@@ -142,8 +144,8 @@ export default class Home extends React.Component<TableListProps, DataState> {
     const columns2 = [
       {
         title: '名次',
-        dataIndex: 'id',
-        key: 'id',
+        dataIndex: 'range',
+        key: 'range',
       },
       {
         title: '党组织',

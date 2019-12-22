@@ -3,6 +3,7 @@ import {
   Input,
   Modal,
   Upload,
+  Button,
   Icon,
   InputNumber,
   Select,
@@ -51,7 +52,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
 
   const [options, setOptions] = useState();
   const [activeType, setActiveType] = useState();
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState();
   const [thumnail, setThumnail] = useState('');
   const [loading, setLoading] = useState(false);
   const [info, setInfo] = useState();
@@ -60,7 +61,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
   const [latlngs, setLatlngs] = useState();
 
   useEffect(() => {
-    
+
     try {
       departmentAll().then((res: ResParams<TableListItem>) => {
         if (res.code == '0') {
@@ -95,13 +96,13 @@ const CreateForm: React.FC<CreateFormProps> = props => {
     } catch {
       console.error();
     }
-    
+
     if (hasVal) {
       // 修改加载数据
       let id = values ? values.id : '';
       detail(id).then((res: ResParams<TableListItem>) => {
         if (res.code == '0') {
-          setImageUrl(res.data.photos[0].image);
+          setImageUrl(res.data.photos);
           setThumnail(res.data.thumnail);
           setInfo(res.data);
         }
@@ -120,17 +121,13 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       }
       fieldsValue.begin = moment(fieldsValue.begin).format('YYYY-MM-DD HH:mm');
       fieldsValue.end = moment(fieldsValue.end).format('YYYY-MM-DD HH:mm');
-      fieldsValue.photos = [
-        {
-          image: imageUrl,
-        },
-      ];
+      fieldsValue.photos = imageUrl;
       fieldsValue.thumnail = thumnail;
       fieldsValue.fileType = 'IMAGE';
       fieldsValue.menu = 2;
       fieldsValue.enabled = 'true';
       setLoading(false);
-      setImageUrl('');
+      setImageUrl([]);
       setThumnail('');
       form.resetFields();
       if (hasVal) {
@@ -166,7 +163,16 @@ const CreateForm: React.FC<CreateFormProps> = props => {
     }
     if (info.file.status === 'done') {
       const url = info.file.response.data.image;
-      setImageUrl(url);
+      if (imageUrl) {
+        setImageUrl([...imageUrl, {
+          image: url
+        }]);
+      } else {
+        setImageUrl([{
+          image: url
+        }]);
+      }
+
       setLoading(false);
     }
   };
@@ -347,29 +353,51 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           // rules: [{ required: true, message: '请上传' }],
           // initialValue: info && info.primary,
         })(
-          <Upload
-            name="uploadFile"
-            listType="picture-card"
-            className="avatar-uploader"
-            showUploadList={false}
-            action={`http://visit.fothing.com/api/biz/common/file/activity`}
-            headers={{
-              Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
-            }}
-            // beforeUpload={beforeUpload}
-            onChange={handleChangeList}
-          >
-            {imageUrl && !loading ? (
+          <div>
+            <Upload
+              name="uploadFile"
+              // listType="picture-card"
+              className="avatar-uploader"
+              showUploadList={false}
+              action={`https://api.fothing.com/api/biz/common/file/activity`}
+              headers={{
+                Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
+              }}
+              // beforeUpload={beforeUpload}
+              onChange={handleChangeList}
+            >
+              {/* {imageUrl && !loading ? (
               <img src={imageUrl} alt="avatar" style={{ width: '100%' }} />
             ) : (
                 uploadButton
-              )}
-          </Upload>,
+              )} */}
+              <div>
+                <div>
+                  <Button type="primary" loading={loading}>上传</Button>
+                </div>
+
+                {imageUrl && imageUrl.map(item => {
+                  return (
+                    <img src={item.image} onClick={() => {
+                      window.open(item.image)
+                    }} alt="avatar" style={{ width: 200, height: 200 }} />
+                  )
+                })}
+              </div>
+            </Upload>
+            {
+              imageUrl && <div>
+                <a onClick={() => {
+                  setImageUrl([])
+                }}>清空图片</a>
+              </div>
+            }
+          </div>
         )}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="位置坐标">
         {
-          <AMap saveLatlngs={saveLatlngs} latlngs={info ? info.latlngs : []}></AMap>
+          info ? <AMap saveLatlngs={saveLatlngs} latlngs={info.latlngs}></AMap> : <AMap saveLatlngs={saveLatlngs} latlngs={[]}></AMap>
         }
       </FormItem>
       <FormItem
@@ -387,7 +415,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
             listType="picture-card"
             className="avatar-uploader"
             showUploadList={false}
-            action={`http://visit.fothing.com/api/biz/common/file/banner`}
+            action={`https://api.fothing.com/api/biz/common/file/banner`}
             headers={{
               Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
             }}

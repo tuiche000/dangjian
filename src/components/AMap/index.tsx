@@ -7,13 +7,13 @@ let AMap = null;
 export default class App extends React.Component {
   constructor(props) {
     super(props);
-    console.log('props', props);
+    
     const self = this;
     this.state = {
       lineActive: false,
       Slatlngs: [],
-      mapMake: props.latlngs[0],
-      mapCenter: props.latlngs[0]
+      mapMake: [],
+      mapCenter: {}
     };
     this.amapEvents = {
       created: mapInstance => {
@@ -185,10 +185,17 @@ export default class App extends React.Component {
   }
 
   render() {
-    const { type } = this.props;
-    const { Slatlngs, mapMake } = this.state;
-    console.log(mapMake)
-    const latlngs = Slatlngs;
+    const { type, latlngs } = this.props;
+    // const { Slatlngs, mapMake } = this.state;
+    let center = [];
+    if (latlngs.length) {
+      // 编辑有经纬度
+      center = latlngs[0];
+    } else {
+      // 没有经纬度或者新增
+      center = this.state.mapCenter
+    }
+    // const latlngs = Slatlngs;
     //
     const plugins = ['ToolBar'];
     return (
@@ -200,11 +207,11 @@ export default class App extends React.Component {
           <Map
             version={'1.4.4'}
             zoom={17}
-            center={this.state.mapCenter}
+            center={center}
             plugins={plugins}
             events={this.amapEvents}
           >
-            <Marker position={mapMake} />
+            <Marker position={this.state.mapMake.length ? this.state.mapMake : center} />
             {/* <MouseTool events={this.toolEvents} />
             <Polyline style={{ strokeWeight: 6, lineJoin: 'round', strokeColor: "#3366FF" }} path={latlngs}>
               <PolyEditor active={this.state.lineActive} events={this.editorEvents} />

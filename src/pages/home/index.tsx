@@ -5,7 +5,7 @@ import DetailDrawer from './DetailDrawer';
 import Link from 'umi/link';
 import { connect } from 'dva';
 import { StateType } from './model';
-import * as service from './service'
+import * as service from './service';
 import { Dispatch, Action } from 'redux';
 
 interface TableListProps {
@@ -190,9 +190,6 @@ export default class Home extends React.Component<TableListProps, DataState> {
           </List.Item>
           <List.Item>
             <Card title="组织积分">{count.pointOrg}</Card>
-          </List.Item>
-          <List.Item>
-            <Card title="二维码">111</Card>
           </List.Item>
         </List>
         <br></br>

@@ -77,7 +77,7 @@ export default class NewPage extends React.Component<Props> {
       name: 'uploadFile',
       defaultFileList: [],
       // fileList: [],
-      action: 'http://visit.fothing.com/api/biz/common/file/activity',
+      action: 'https://api.fothing.com/api/biz/common/file/activity',
     };
     const modules = {
       toolbar: {

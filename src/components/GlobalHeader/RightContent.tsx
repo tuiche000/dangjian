@@ -1,5 +1,6 @@
 // import { Icon, Tooltip } from 'antd';
 import React from 'react';
+import { Popover } from 'antd';
 import { connect } from 'dva';
 import { formatMessage } from 'umi-plugin-react/locale';
 import { ConnectProps, ConnectState } from '@/models/connect';
@@ -8,6 +9,9 @@ import HeaderSearch from '../HeaderSearch';
 import SelectLang from '../SelectLang';
 import styles from './index.less';
 import NoticeIconView from './NoticeIconView';
+import qr from '@/assets/qr.png'
+
+
 export type SiderTheme = 'light' | 'dark';
 export interface GlobalHeaderRightProps extends ConnectProps {
   theme?: SiderTheme;
@@ -63,6 +67,19 @@ const GlobalHeaderRight: React.SFC<GlobalHeaderRightProps> = props => {
         </a>
       </Tooltip> */}
       {/* <NoticeIconView /> */}
+      <Popover content={
+        <img
+          style={{width: 200}}
+          src={qr}
+          alt="netlify logo"
+        />
+      }>
+        <img
+          src={qr}
+          width="50px"
+          alt="netlify logo"
+        />
+      </Popover>
       <Avatar menu />
       {/* <SelectLang className={styles.action} /> */}
     </div>

@@ -11,11 +11,12 @@ export async function detail(id: string) {
 export async function department_query() {
   return request('/api/biz/department/all');
 }
-export async function query(params: {
+export async function query(data: {
   orgfrom: 'TREETS' | 'CHECKIN'
 }) {
-  return request('/api/biz/organization/all', {
-    params
+  return request('/api/biz/organization/query', {
+    data,
+    method: 'POST'
   });
 }
 

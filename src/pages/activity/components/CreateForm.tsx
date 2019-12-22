@@ -60,36 +60,42 @@ const CreateForm: React.FC<CreateFormProps> = props => {
   const [latlngs, setLatlngs] = useState();
 
   useEffect(() => {
-    departmentAll().then((res: ResParams<TableListItem>) => {
-      if (res.code == '0') {
-        // 递归
-        function recursive(arr: any) {
-          if (arr instanceof Array) {
-            arr.forEach(item => {
-              item.key = item.id;
-              item.title = item.name;
-              item.value = item.id;
-              if (item.children.length) {
-                item.children = recursive(item.children);
-              } else {
-                item.children = undefined;
-              }
-            });
+    
+    try {
+      departmentAll().then((res: ResParams<TableListItem>) => {
+        if (res.code == '0') {
+          // 递归
+          function recursive(arr: any) {
+            if (arr instanceof Array) {
+              arr.forEach(item => {
+                item.key = item.id;
+                item.title = item.name;
+                item.value = item.id;
+                if (item.children.length) {
+                  item.children = recursive(item.children);
+                } else {
+                  item.children = undefined;
+                }
+              });
+            }
+            return arr;
           }
-          return arr;
+          let list = [];
+          list = recursive(res.data);
+          setOptions(list);
         }
-        let list = [];
-        list = recursive(res.data);
-        setOptions(list);
-      }
-    });
+      });
 
-    Common_Dictionary('PARTY_ACTIVITY_ACTIVETYPE').then(
-      (res: ResParams<{ [propName: string]: string }>) => {
-        setActiveType(res.data);
-      },
-    );
+      Common_Dictionary('PARTY_ACTIVITY_ACTIVETYPE').then(
+        (res: ResParams<{ [propName: string]: string }>) => {
+          setActiveType(res.data);
+        },
+      );
 
+    } catch {
+      console.error();
+    }
+    
     if (hasVal) {
       // 修改加载数据
       let id = values ? values.id : '';
@@ -363,7 +369,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="位置坐标">
         {
-          (info && info.latlngs) ? <AMap saveLatlngs={saveLatlngs} latlngs={info.latlngs[0]}></AMap> : <AMap saveLatlngs={saveLatlngs} latlngs={[]}></AMap>
+          <AMap saveLatlngs={saveLatlngs} latlngs={info ? info.latlngs : []}></AMap>
         }
       </FormItem>
       <FormItem

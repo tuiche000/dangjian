@@ -36,7 +36,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
   const [actTypes, setActTypes] = useState();
 
   useEffect(() => {
-    Common_Enum('PARTY_TYPE').then((res: ResParams<{ [propName: string]: string }>) => {
+    Common_Enum('RULE_TYPE').then((res: ResParams<{ [propName: string]: string }>) => {
       setTypes(res.data);
     });
     Common_Dictionary('PARTY_ACTIVITY_ACTIVETYPE').then((res: ResParams<{ [propName: string]: string }>) => {
@@ -114,10 +114,10 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           initialValue: info && info.partyType,
         })(<Input placeholder="请输入" />)}
       </FormItem> */}
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="报道类型">
-        {form.getFieldDecorator('partyType', {
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="规则类型">
+        {form.getFieldDecorator('ruleType', {
           // rules: [{ required: true, message: '请选择' }],
-          initialValue: info && info.partyType,
+          initialValue: info && info.ruleType,
         })(
           <Select
             // mode="multiple"

@@ -86,8 +86,8 @@ class TableList extends Component<TableListProps, TableListState> {
       }
     },
     {
-      title: '报到类型',
-      dataIndex: 'partyType',
+      title: '规则类型',
+      dataIndex: 'ruleType',
       render: (val: string) => this.state.types[val],
     },
     {

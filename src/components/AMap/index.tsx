@@ -12,7 +12,8 @@ export default class App extends React.Component {
     this.state = {
       lineActive: false,
       Slatlngs: [],
-      mapMake: props.latlngs[0]
+      mapMake: props.latlngs[0],
+      mapCenter: props.latlngs[0]
     };
     this.amapEvents = {
       created: mapInstance => {
@@ -46,9 +47,9 @@ export default class App extends React.Component {
       created: ins => {
         //
       },
-      addnode: () => {},
-      adjust: () => {},
-      removenode: () => {},
+      addnode: () => { },
+      adjust: () => { },
+      removenode: () => { },
       end: obj => {
         let distance = obj.target.getLength();
         let paths = obj.target.getPath();
@@ -61,18 +62,18 @@ export default class App extends React.Component {
         self.props.save(latlngs, distance);
       },
     };
-    this.mapCenter = props.latlngs[0]
+    // this.mapCenter = props.latlngs[0]
   }
 
   pluginSearch(mapInstance) {
-    AMap.plugin(['AMap.Autocomplete', 'AMap.PlaceSearch'], function() {
+    AMap.plugin(['AMap.Autocomplete', 'AMap.PlaceSearch'], function () {
       var autocomplete = new AMap.Autocomplete({
         input: 'keyword',
       });
       var placeSearch = new AMap.PlaceSearch({
         map: mapInstance,
       });
-      AMap.event.addListener(autocomplete, 'select', function(e) {
+      AMap.event.addListener(autocomplete, 'select', function (e) {
         //TODO 针对选中的poi实现自己的功能
         placeSearch.setCity(e.poi.adcode);
         placeSearch.search(e.poi.name);
@@ -124,6 +125,47 @@ export default class App extends React.Component {
   };
 
   componentWillMount() {
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+      }
+      else {
+        alert("该浏览器不支持获取地理位置。")
+      }
+    }
+
+    const showPosition = (position: {
+      coords: {
+        latitude: number;
+        longitude: number;
+      }
+    }) => {
+      this.setState({
+        mapCenter: {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        }
+      })
+    }
+    function showError(error: {
+      [propName: string]: any;
+    }) {
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          alert("用户拒绝对获取地理位置的请求。")
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert("位置信息是不可用的。")
+          break;
+        case error.TIMEOUT:
+          alert("请求用户地理位置超时。")
+          break;
+        case error.UNKNOWN_ERROR:
+          alert("未知错误。")
+          break;
+      }
+    }
+    getLocation()
     const { type, Platlngs, distance } = this.props;
 
     if (type === 'edit') {
@@ -132,7 +174,9 @@ export default class App extends React.Component {
         Slatlngs: Platlngs,
       });
       if (Platlngs[0])
-        this.mapCenter = { longitude: Platlngs[0].longitude, latitude: Platlngs[0].latitude };
+        this.setState({
+          mapCenter: { longitude: Platlngs[0].longitude, latitude: Platlngs[0].latitude }
+        })
     } else {
       this.setState({
         Slatlngs: [],
@@ -143,6 +187,7 @@ export default class App extends React.Component {
   render() {
     const { type } = this.props;
     const { Slatlngs, mapMake } = this.state;
+    console.log(mapMake)
     const latlngs = Slatlngs;
     //
     const plugins = ['ToolBar'];
@@ -155,7 +200,7 @@ export default class App extends React.Component {
           <Map
             version={'1.4.4'}
             zoom={17}
-            center={this.mapCenter}
+            center={this.state.mapCenter}
             plugins={plugins}
             events={this.amapEvents}
           >

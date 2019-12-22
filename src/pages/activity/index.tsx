@@ -122,7 +122,7 @@ class TableList extends Component<TableListProps, TableListState> {
       title: '人数上限',
       dataIndex: 'limit',
     },
-    
+
     {
       title: '操作',
       render: (text, record) => (
@@ -201,17 +201,21 @@ class TableList extends Component<TableListProps, TableListState> {
   ];
 
   async componentDidMount() {
-    const activeStatus: ResParams<{ [propName: string]: string }> = await Common_Enum(
-      'ACTIVE_STATUS',
-    );
-    const serviceType: ResParams<{ [propName: string]: string }> = await Common_Enum(
-      'SERVICE_TYPE',
-    );
-    this.setState({
-      activeStatus: activeStatus.data,
-      serviceType: serviceType.data,
-    });
-    this.handleQuery();
+    try {
+      const activeStatus: ResParams<{ [propName: string]: string }> = await Common_Enum(
+        'ACTIVE_STATUS',
+      );
+      const serviceType: ResParams<{ [propName: string]: string }> = await Common_Enum(
+        'SERVICE_TYPE',
+      );
+      this.setState({
+        activeStatus: activeStatus.data,
+        serviceType: serviceType.data,
+      });
+      this.handleQuery();
+    } catch {
+      console.log('err')
+    }
   }
 
   async downQr(record: TableListItem, channel?: 'CHECKIN') {

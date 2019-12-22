@@ -118,8 +118,8 @@ const MenuCreateForm: React.FC<CreateFormProps> = props => {
         })(<Input placeholder="请输入" />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="所属单位">
-        {form.getFieldDecorator('parent', {
-          initialValue: info && info.parent,
+        {form.getFieldDecorator('department', {
+          initialValue: info && info.department,
         })(
           <TreeSelect
             allowClear
@@ -137,7 +137,7 @@ const MenuCreateForm: React.FC<CreateFormProps> = props => {
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="组织类型">
         {form.getFieldDecorator('partyType', {
           // rules: [{ required: true, message: '请输入！', min: 2 }],
-          initialValue: info && info.name,
+          initialValue: info && info.partyType,
         })(<Select
           // mode="multiple"
           style={{ width: '100%' }}

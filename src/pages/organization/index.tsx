@@ -78,6 +78,10 @@ class TableList extends Component<TableListProps, TableListState> {
       dataIndex: 'name',
     },
     {
+      title: '所属单位',
+      dataIndex: 'departmentName',
+    },
+    {
       title: '层级',
       dataIndex: 'level',
     },

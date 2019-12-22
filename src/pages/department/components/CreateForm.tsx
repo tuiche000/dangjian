@@ -3,7 +3,7 @@ import { Form, Input, Modal, Icon, InputNumber, TreeSelect, Select } from 'antd'
 import { FormComponentProps } from 'antd/es/form';
 import React, { useState, useEffect } from 'react';
 import { AddParams, TableListItem } from '../data.d';
-import { query, detail } from '../service';
+import { department_query, detail } from '../service';
 
 const FormItem = Form.Item;
 
@@ -33,7 +33,7 @@ const MenuCreateForm: React.FC<CreateFormProps> = props => {
   const [info, setInfo] = useState();
 
   useEffect(() => {
-    query().then((res: ResParams<TableListItem>) => {
+    department_query().then((res: ResParams<TableListItem>) => {
       if (res.code == '0') {
         // 递归
         function recursive(arr: any) {
@@ -117,9 +117,9 @@ const MenuCreateForm: React.FC<CreateFormProps> = props => {
           initialValue: info && info.name,
         })(<Input placeholder="请输入" />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="所属菜单">
-        {form.getFieldDecorator('parent', {
-          initialValue: info && info.parent,
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="所属单位">
+        {form.getFieldDecorator('department', {
+          initialValue: info && info.department,
         })(
           <TreeSelect
             allowClear
@@ -134,6 +134,29 @@ const MenuCreateForm: React.FC<CreateFormProps> = props => {
           ></TreeSelect>,
         )}
       </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="组织类型">
+        {form.getFieldDecorator('partyType', {
+          // rules: [{ required: true, message: '请输入！', min: 2 }],
+          initialValue: info && info.partyType,
+        })(<Select
+          // mode="multiple"
+          style={{ width: '100%' }}
+          placeholder="请选择"
+          onChange={e => {
+            console.log(e);
+          }}
+        >
+          <Select.Option value="PTY_COM">
+            党委
+          </Select.Option>
+          <Select.Option value="PTY_BRANCH">
+            党总支
+          </Select.Option>
+          <Select.Option value="PTY_SUBBRANCH">
+            党支部
+          </Select.Option>
+        </Select>)}
+      </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="报到组织">
         {form.getFieldDecorator('orgfrom', {
           initialValue: "CHECKIN"
@@ -147,7 +170,7 @@ const MenuCreateForm: React.FC<CreateFormProps> = props => {
           }}
         >
           <Select.Option value="CHECKIN">
-            街道组织
+            报到组织
           </Select.Option>
         </Select>)}
       </FormItem>

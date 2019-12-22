@@ -142,7 +142,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           initialValue: info && info.phone,
         })(<Input type="number" placeholder="请输入" />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="报道类型">
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="报到类型">
         {form.getFieldDecorator('partyType', {
           // rules: [{ required: true, message: '请选择' }],
           initialValue: info && info.partyType,
@@ -169,8 +169,8 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         )}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="所属单位">
-        {form.getFieldDecorator('parent', {
-          initialValue: info && info.parent,
+        {form.getFieldDecorator('department', {
+          initialValue: info && info.department,
         })(
           <TreeSelect
             allowClear
@@ -185,33 +185,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           ></TreeSelect>,
         )}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="党组织">
-        {form.getFieldDecorator('organization', {
-          // rules: [{ required: true, message: '请选择' }],
-          initialValue: info && info.organization,
-        })(
-          <Select
-            // mode="multiple"
-            style={{ width: '100%' }}
-            placeholder="请选择"
-            onChange={e => {
-              console.log(e);
-            }}
-          >
-            {types &&
-              Object.keys(types).map(
-                (item: any): JSX.Element => {
-                  return (
-                    <Option key={item} value={item}>
-                      {types[item]}
-                    </Option>
-                  );
-                },
-              )}
-          </Select>,
-        )}
-      </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="报到类型">
+      {/* <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="报到类型">
         {form.getFieldDecorator('organizationFrom', {
           initialValue: info && info.organizationFrom,
         })(<Select
@@ -229,7 +203,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
             报道
           </Select.Option>
         </Select>)}
-      </FormItem>
+      </FormItem> */}
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="专业特长">
         {form.getFieldDecorator('skill', {
           // rules: [{ required: true, message: '请输入！', min: 2 }],

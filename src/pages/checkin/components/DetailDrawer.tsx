@@ -36,11 +36,12 @@ const DescriptionItem = ({ title, content }: any) => (
 interface DetailDrawerProps {
   drawerVisible: boolean;
   partyType: any;
+  auditType: any;
   handleDrawerVisible: (flag?: boolean, record?: Partial<TableListItem>) => void
   values: Partial<TableListItem>;
 }
 const DetailDrawer: React.FC<DetailDrawerProps> = props => {
-  const { drawerVisible, handleDrawerVisible, values, partyType } = props;
+  const { drawerVisible, handleDrawerVisible, values, partyType, auditType } = props;
 
   const [detailInfo, setDetailInfo] = useState();
   useEffect(() => {
@@ -90,7 +91,7 @@ const DetailDrawer: React.FC<DetailDrawerProps> = props => {
           <DescriptionItem title="发放积分" content={detailInfo && detailInfo.point} />
         </Col>
         <Col span={24}>
-          <DescriptionItem title="审核状态" content={detailInfo && detailInfo.auditType} />
+          <DescriptionItem title="审核状态" content={detailInfo && auditType[detailInfo.auditType]} />
         </Col>
 
       </Row>

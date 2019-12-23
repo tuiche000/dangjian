@@ -431,6 +431,7 @@ class TableList extends Component<TableListProps, TableListState> {
         {type == 'drawer' ? (
           <DetailDrawer
             partyType={this.state.partyType}
+            auditType={this.state.auditType}
             values={stepFormValues}
             drawerVisible={this.state.drawerVisible}
             handleDrawerVisible={this.handleDrawerVisible}

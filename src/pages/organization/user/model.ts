@@ -43,6 +43,7 @@ const Model: ModelType = {
   effects: {
     *fetch({ payload }, { call, put }) {
       payload = {
+        partyType: "CPC",
         ...payload,
         organizationFrom: 'TREETS'
       }

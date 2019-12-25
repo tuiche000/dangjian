@@ -137,6 +137,7 @@ export default {
               icon: 'setting',
               path: '/activity',
               component: './activity',
+              authority: ['admin', 'user'],
             },
             {
               name: 'checkin',

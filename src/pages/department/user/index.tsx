@@ -236,10 +236,7 @@ class TableList extends Component<TableListProps, TableListState> {
         formValues: values,
       });
 
-      dispatch({
-        type: 'namespace_department_user/fetch',
-        payload: values,
-      });
+      this.handleQuery(values)
     });
   };
 
@@ -313,11 +310,10 @@ class TableList extends Component<TableListProps, TableListState> {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="报到类型">
-              {getFieldDecorator('partyType')(
+              {getFieldDecorator('partyType', {
+                initialValue: 'CPC'
+              })(
                 <Select style={{ maxWidth: 220 }}>
-                  <Select.Option value="">
-                    全部
-                  </Select.Option>
                   <Select.Option value="CPC">
                     党员
                   </Select.Option>

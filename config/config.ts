@@ -131,12 +131,14 @@ export default {
               icon: 'home',
               path: '/home',
               component: './home',
+              authority: ['ROLE_ADMINISTRATOR'],
             },
             {
               name: 'activity',
               icon: 'setting',
               path: '/activity',
               component: './activity',
+              authority: ['ROLE_ADMINISTRATOR'],
               // authority: ['admin', 'user'],
             },
             {
@@ -144,11 +146,13 @@ export default {
               icon: 'setting',
               path: '/checkin',
               component: './checkin',
+              authority: ['ROLE_ADMINISTRATOR', 'ROLE_ORGADMIN'],
             },
             {
               name: 'point',
               icon: 'money-collect',
               path: '/point',
+              authority: ['ROLE_ADMINISTRATOR'],
               routes: [
                 {
                   name: 'point-point',
@@ -174,6 +178,7 @@ export default {
               name: 'organization',
               icon: 'team',
               path: '/organization',
+              authority: ['ROLE_ADMINISTRATOR'],
               routes: [
                 {
                   name: 'organization-organization',
@@ -193,18 +198,21 @@ export default {
               name: 'department',
               icon: 'team',
               path: '/department',
+              authority: ['ROLE_ADMINISTRATOR', 'ROLE_ORGADMIN'],
               routes: [
                 {
                   name: 'department-department',
                   // icon: 'smile',
                   path: '/department/department',
                   component: './department',
+                  authority: ['ROLE_ADMINISTRATOR'],
                 },
                 {
                   name: 'department-user',
                   // icon: 'smile',
                   path: '/department/user',
                   component: './department/user',
+                  authority: ['ROLE_ADMINISTRATOR', 'ROLE_ORGADMIN'],
                 },
               ],
             },
@@ -212,6 +220,7 @@ export default {
               name: 'content',
               icon: 'table',
               path: '/content',
+              authority: ['ROLE_ADMINISTRATOR'],
               routes: [
                 {
                   name: 'content-topic',
@@ -238,7 +247,7 @@ export default {
               name: 'userManger',
               icon: 'user',
               path: '/userManger',
-              authority: ['admin', 'user'],
+              authority: ['ROLE_ADMINISTRATOR'],
               routes: [
                 {
                   name: 'userManger-userManger',

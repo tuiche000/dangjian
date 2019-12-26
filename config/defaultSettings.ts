@@ -54,7 +54,8 @@ export default {
   menu: {
     locale: true,
   },
-  title: process.env.NODE_ENV !== 'production' ? 'localhost' : '家在潞源党建系统',
+  title: process.env.NODE_ENV !== 'production' ? 'localhost' : '党建系统-测试版',
+  // title: process.env.NODE_ENV !== 'production' ? 'localhost' : '家在潞源党建系统',
   pwa: false,
   iconfontUrl: '',
 } as DefaultSettings;

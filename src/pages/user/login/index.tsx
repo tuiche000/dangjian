@@ -66,11 +66,11 @@ class Login extends Component<LoginProps, LoginState> {
       dispatch({
         type: 'userAndlogin/login',
         payload: {
-          // clientId: '4RYir52ArpnWadbgoGfaSb',
-          // clientSecret: '3ZcedYqQGCMzSa0mNluwSX8wmZcicNCP',
-          // test
           clientId: '2sY5PeR7SQZe8YkZ6Eo4yW',
           clientSecret: 'yUDX2fK3snvRoDhMUGDA6rrVhXmeNTtG',
+          // 生产
+          // clientId: '3sjmtNfSuDNNs4om1BGxQO',
+          // clientSecret: 'xxNLbFvfx5c1HyUXNw1k3NVhNpLSVr7A',
           ...values,
           type,
         },

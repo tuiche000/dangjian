@@ -137,7 +137,7 @@ export default {
               icon: 'setting',
               path: '/activity',
               component: './activity',
-              authority: ['admin', 'user'],
+              // authority: ['admin', 'user'],
             },
             {
               name: 'checkin',
@@ -238,6 +238,7 @@ export default {
               name: 'userManger',
               icon: 'user',
               path: '/userManger',
+              authority: ['admin', 'user'],
               routes: [
                 {
                   name: 'userManger-userManger',

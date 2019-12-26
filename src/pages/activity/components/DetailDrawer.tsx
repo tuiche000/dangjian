@@ -243,7 +243,7 @@ class DetailTable extends Component<UpdateFormProps, UpdateFormState> {
         }}
         visible={drawerVisible}
       >
-        <p style={{ ...pStyle, marginBottom: 24 }}>{type == 'check' ? '签到/签退记录' : '报到记录'}</p>
+        <p style={{ ...pStyle, marginBottom: 24 }}>{type == 'check' ? '签到/签退记录' : '报名记录'}</p>
         {/* <p style={pStyle}>Personal</p> */}
         <Divider></Divider>
         <Table

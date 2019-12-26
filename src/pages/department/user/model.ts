@@ -45,7 +45,7 @@ const Model: ModelType = {
       payload = {
         partyType: "CPC",
         ...payload,
-        organizationFrom: 'CHECKIN'
+        orgfrom: 'CHECKIN'
       }
       const response: ResParams<TableListData> = yield call(query, payload);
       yield put({

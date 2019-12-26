@@ -150,7 +150,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         {form.getFieldDecorator('point', {
           rules: [{ required: true, message: '请输入' }],
           initialValue: info && info.point,
-        })(<InputNumber min={1} max={99} placeholder="请输入" />)}
+        })(<InputNumber min={1} max={999} placeholder="请输入" />)}
       </FormItem>
     </Modal>
   );

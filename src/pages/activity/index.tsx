@@ -186,7 +186,7 @@ class TableList extends Component<TableListProps, TableListState> {
                   </a>
                 </Menu.Item>
                 <Menu.Item>
-                  <a onClick={() => this.handleDrawerVisible(true, record, 'apply')}>报到记录</a>
+                  <a onClick={() => this.handleDrawerVisible(true, record, 'apply')}>报名记录</a>
                 </Menu.Item>
               </Menu>
             }

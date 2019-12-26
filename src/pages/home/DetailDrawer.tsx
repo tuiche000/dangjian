@@ -90,7 +90,7 @@ const DetailDrawer: React.FC<DetailDrawerProps> = props => {
         <Col span={24}>
           <DescriptionItem title="报名截止时间" content={values.end} />
         </Col>
-        <Col span={24}>
+        {/* <Col span={24}>
           <div
             style={{
               fontSize: 14,
@@ -110,7 +110,7 @@ const DetailDrawer: React.FC<DetailDrawerProps> = props => {
               <img width="200" height="200" src={values.qrcode} alt="" />
             </div>
           </div>
-        </Col>
+        </Col> */}
       </Row>
       <Divider />
       <p style={pStyle}>活动开展信息</p>

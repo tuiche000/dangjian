@@ -36,18 +36,23 @@ const errorHandler = (error: { response: Response }) => {
     const { status, url } = response;
 
     if (response.status == 401 && window.location.pathname != '/user/login') {
-      Modal.error({
-        title: '请求错误',
-        okText: '去登录',
-        content: '用户未登录或登录过期',
-        onOk: () => {
-          window.location.replace(
-            `/user/login?${stringify({
-              redirect: window.location.href,
-            })}`,
-          );
-        },
-      });
+      window.location.replace(
+        `/user/login?${stringify({
+          redirect: window.location.href,
+        })}`,
+      );
+      // Modal.error({
+      //   title: '请求错误',
+      //   okText: '去登录',
+      //   content: '用户未登录或登录过期',
+      //   onOk: () => {
+      //     window.location.replace(
+      //       `/user/login?${stringify({
+      //         redirect: window.location.href,
+      //       })}`,
+      //     );
+      //   },
+      // });
       return response;
     }
 
@@ -90,7 +95,7 @@ const request = extend({
 
 request.interceptors.request.use((url, options) => {
   if (/^\/api\/biz/.test(url)) {
-    url = 'https://api.fothing.com' + url;
+    url = 'https://h5.fothing.com' + url;
   }
   return {
     url,

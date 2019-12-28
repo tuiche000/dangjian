@@ -95,7 +95,7 @@ const request = extend({
 
 request.interceptors.request.use((url, options) => {
   if (/^\/api\/biz/.test(url)) {
-    url = 'https://h5.fothing.com' + url;
+    url = require('@/../config.json').apiHost + url;
   }
   return {
     url,

@@ -83,16 +83,16 @@ class TableList extends Component<TableListProps, TableListState> {
 
   columns: StandardTableColumnProps[] = [
     {
-      title: '报到人',
-      dataIndex: 'checkorName',
-    },
-    {
       title: '报到类型',
       dataIndex: 'partyType',
       render: (val: string) => this.state.partyType[val],
     },
     {
-      title: '党组织',
+      title: '报到单位',
+      dataIndex: 'departmentName',
+    },
+    {
+      title: '党组织名称',
       dataIndex: 'organizationName',
     },
     {
@@ -100,14 +100,23 @@ class TableList extends Component<TableListProps, TableListState> {
       dataIndex: 'checkinTime',
     },
     {
-      title: '发放积分',
-      dataIndex: 'point',
+      title: '联系人',
+      dataIndex: 'checkorName',
+    },
+    {
+      title: '联系方式',
+      dataIndex: 'phone',
     },
     {
       title: '审核状态',
       dataIndex: 'auditType',
       render: (val: string) => this.state.auditType[val],
     },
+    {
+      title: '发放积分',
+      dataIndex: 'point',
+    },
+
     {
       title: '操作',
       render: (record) => {

@@ -72,28 +72,31 @@ const DetailDrawer: React.FC<DetailDrawerProps> = props => {
       {/* <p style={pStyle}>Personal</p> */}
       <Divider></Divider>
       <Row>
-        <Col span={24}>
-          <DescriptionItem title="报到人" content={detailInfo && detailInfo.checkorName} />{' '}
-        </Col>
+        
         <Col span={24}>
           <DescriptionItem title="报到类型" content={detailInfo && partyType[detailInfo.partyType]} />
-        </Col>
-        <Col span={24}>
-          <DescriptionItem title="党组织" content={detailInfo && detailInfo.organizationName} />
         </Col>
         <Col span={24}>
           <DescriptionItem title="报到单位" content={detailInfo && detailInfo.departmentName} />
         </Col>
         <Col span={24}>
+          <DescriptionItem title="党组织名称" content={detailInfo && detailInfo.organizationName} />
+        </Col>
+        <Col span={24}>
           <DescriptionItem title="报到时间" content={detailInfo && detailInfo.checkinTime} />
         </Col>
         <Col span={24}>
-          <DescriptionItem title="发放积分" content={detailInfo && detailInfo.point} />
+          <DescriptionItem title="联系人" content={detailInfo && detailInfo.checkorName} />{' '}
+        </Col>
+        <Col span={24}>
+          <DescriptionItem title="联系方式" content={detailInfo && detailInfo.phone} />{' '}
         </Col>
         <Col span={24}>
           <DescriptionItem title="审核状态" content={detailInfo && auditType[detailInfo.auditType]} />
         </Col>
-
+        <Col span={24}>
+          <DescriptionItem title="发放积分" content={detailInfo && detailInfo.point} />
+        </Col>
       </Row>
       <Divider></Divider>
     </Drawer>

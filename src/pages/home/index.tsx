@@ -187,12 +187,12 @@ export default class Home extends React.Component<TableListProps, DataState> {
           <List.Item>
             <Card title="本月活动">{count.activity}</Card>
           </List.Item>
-          <List.Item>
+          {/* <List.Item>
             <Card title="积分排名">{count.rankingOrg}</Card>
           </List.Item>
           <List.Item>
             <Card title="组织积分">{count.pointOrg}</Card>
-          </List.Item>
+          </List.Item> */}
         </List>
         <br></br>
         <Row gutter={16}>
@@ -242,7 +242,7 @@ export default class Home extends React.Component<TableListProps, DataState> {
                 >
                   <List.Item.Meta
                     // description={<div>{item.checkorName}</div>}
-                    title={<div>{item.checkorName}</div>}
+                    title={<div>{item.checkorName || item.organizationName} &nbsp;-&nbsp; {item.partyType == 'CPC' ? '党员' : '党组织'}</div>}
                   />
                 </List.Item>
               )}
@@ -250,7 +250,7 @@ export default class Home extends React.Component<TableListProps, DataState> {
           </Col>
         </Row>
         <br></br>
-        <Row gutter={16}>
+        {/* <Row gutter={16}>
           <Col span={12}>
             <List
               header={<Title level={4}>报到党员个人排行榜</Title>}
@@ -267,7 +267,7 @@ export default class Home extends React.Component<TableListProps, DataState> {
               <Table pagination={false} bordered dataSource={this.state.board2} columns={columns2} />
             </List>
           </Col>
-        </Row>
+        </Row> */}
         {this.state.stepFormValues ? (
           <DetailDrawer
             values={this.state.stepFormValues}

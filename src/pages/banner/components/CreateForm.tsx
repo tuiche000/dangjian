@@ -116,7 +116,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
             listType="picture-card"
             className="avatar-uploader"
             showUploadList={false}
-            action={`https://h5.fothing.com/api/biz/common/file/banner`}
+            action={`${require('@/../config.json').apiHost}/api/biz/common/file/banner`}
             headers={{
               Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
             }}

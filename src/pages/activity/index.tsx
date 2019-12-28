@@ -135,7 +135,7 @@ class TableList extends Component<TableListProps, TableListState> {
             okText="是"
             cancelText="否"
           >
-            <a>{record.enabled ? '停用' : '启用'}</a>
+            <a>{record.enabled ? '停止报名' : '启用报名'}</a>
           </Popconfirm>
           <Divider type="vertical" />
           <Dropdown
@@ -143,9 +143,14 @@ class TableList extends Component<TableListProps, TableListState> {
             trigger={['click']}
             overlay={
               <Menu>
-                <Menu.Item>
-                  <a onClick={() => this.noticeVisible(true, record)}>发送短信</a>
-                </Menu.Item>
+                {
+                  record.activeStatus != 'FINISHED' ? (
+                    <Menu.Item>
+                      <a onClick={() => this.noticeVisible(true, record)}>发送短信</a>
+                    </Menu.Item>
+                  ) : null
+                }
+
                 <Menu.Item>
                   <Popover
                     content={
@@ -161,7 +166,7 @@ class TableList extends Component<TableListProps, TableListState> {
                     }
                     trigger="click"
                   >
-                    <a onClick={() => this.downQr(record)}>活动二维码</a>
+                    <a onClick={() => this.downQr(record)}>报名二维码</a>
                   </Popover>
                 </Menu.Item>
                 <Menu.Item>

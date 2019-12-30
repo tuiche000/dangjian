@@ -148,6 +148,21 @@ export default {
               component: './checkin',
               authority: ['ROLE_ADMINISTRATOR', 'ROLE_ORGADMIN'],
             },
+           
+            {
+              name: 'organization',
+              icon: 'team',
+              path: '/organization',
+              component: './organization',
+              authority: ['ROLE_ADMINISTRATOR'],
+            },
+            {
+              name: 'department',
+              icon: 'team',
+              path: '/department',
+              component: './department',
+              authority: ['ROLE_ADMINISTRATOR'],
+            },
             {
               name: 'point',
               icon: 'money-collect',
@@ -171,48 +186,6 @@ export default {
                   // icon: 'smile',
                   path: '/point/pointRule',
                   component: './pointRule',
-                },
-              ],
-            },
-            {
-              name: 'organization',
-              icon: 'team',
-              path: '/organization',
-              authority: ['ROLE_ADMINISTRATOR'],
-              routes: [
-                {
-                  name: 'organization-organization',
-                  // icon: 'smile',
-                  path: '/organization/organization',
-                  component: './organization',
-                },
-                {
-                  name: 'organization-user',
-                  // icon: 'smile',
-                  path: '/organization/user',
-                  component: './organization/user',
-                },
-              ],
-            },
-            {
-              name: 'department',
-              icon: 'team',
-              path: '/department',
-              authority: ['ROLE_ADMINISTRATOR', 'ROLE_ORGADMIN'],
-              routes: [
-                {
-                  name: 'department-department',
-                  // icon: 'smile',
-                  path: '/department/department',
-                  component: './department',
-                  authority: ['ROLE_ADMINISTRATOR'],
-                },
-                {
-                  name: 'department-user',
-                  // icon: 'smile',
-                  path: '/department/user',
-                  component: './department/user',
-                  authority: ['ROLE_ADMINISTRATOR', 'ROLE_ORGADMIN'],
                 },
               ],
             },

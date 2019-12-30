@@ -51,6 +51,9 @@ const Model: ModelType = {
           arr.forEach(item => {
             // item.key = item.id
             if (item.children.length) {
+              // if (item.users.length) {
+              //   item.children = [...item.children, ...item.users]
+              // }
               item.children = recursive(item.children);
             } else {
               item.children = undefined;

@@ -7,6 +7,16 @@ export async function detail(id: string) {
   });
 }
 
+// 通过组织ID搜索用户分页记录
+export async function user_node(id: string) {
+  return request(`/api/biz/user/node/${id}`, {
+    params: {
+      flag: false
+    },
+    method: 'POST'
+  });
+}
+
 // 单位树结构
 export async function department_query() {
   return request('/api/biz/department/all');

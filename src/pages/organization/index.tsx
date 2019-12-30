@@ -8,8 +8,9 @@ import { SorterResult } from 'antd/es/table';
 import { connect } from 'dva';
 import { StateType } from './model';
 import CreateForm from './components/CreateForm';
-import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
+import StandardTable, { StandardTableColumnProps } from '@/components/StandardTable';
 import { TableListItem, TableListPagination, TableListParams, AddParams } from './data.d';
+import { user_node } from './service';
 
 import styles from './style.less';
 
@@ -41,6 +42,7 @@ interface TableListState {
   type: 'add' | 'updata';
   pageNo: number;
   pageSize: number;
+  userList: any[];
 }
 
 /* eslint react/no-multi-comp:0 */
@@ -70,6 +72,7 @@ class TableList extends Component<TableListProps, TableListState> {
     type: 'add',
     pageNo: 1,
     pageSize: 10,
+    userList: []
   };
 
   columns: StandardTableColumnProps[] = [
@@ -81,19 +84,19 @@ class TableList extends Component<TableListProps, TableListState> {
       title: '所属单位',
       dataIndex: 'departmentName',
     },
-    {
-      title: '层级',
-      dataIndex: 'level',
-    },
-    {
-      title: '显示顺序',
-      dataIndex: 'displayOrder',
-      sorter: true,
-      align: 'right',
-      render: (val: string) => `${val}`,
-      // mark to display a total number
-      needTotal: true,
-    },
+    // {
+    //   title: '层级',
+    //   dataIndex: 'level',
+    // },
+    // {
+    //   title: '显示顺序',
+    //   dataIndex: 'displayOrder',
+    //   sorter: true,
+    //   align: 'right',
+    //   render: (val: string) => `${val}`,
+    //   // mark to display a total number
+    //   needTotal: true,
+    // },
     {
       title: '操作',
       render: (text, record) => (
@@ -108,6 +111,14 @@ class TableList extends Component<TableListProps, TableListState> {
 
   componentDidMount() {
     this.handleQuery();
+  }
+
+  async POST_user_node(id: string) {
+    const res = await user_node(id)
+    // console.log(res)
+    this.setState({
+      userList: res.data
+    })
   }
 
   handleStandardTableChange = (
@@ -275,7 +286,7 @@ class TableList extends Component<TableListProps, TableListState> {
       loading,
     } = this.props;
 
-    const { type } = this.state;
+    const { type, userList } = this.state;
 
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
 
@@ -304,7 +315,48 @@ class TableList extends Component<TableListProps, TableListState> {
                 </span>
               )}
             </div>
-            <StandardTable
+            <Row gutter={16}>
+              <Col span={12}>
+
+                <StandardTable
+                  rowKey="id"
+                  selectedRows={selectedRows}
+                  loading={loading}
+                  data={data}
+                  title={() => {
+                    return <div>组织列表</div>
+                  }}
+                  scroll={{ x: 800, y: 300 }}
+                  onExpand={(exp, rec) => {
+                    this.POST_user_node(rec.id)
+                    // if (exp) {
+                    //   this.POST_user_node(rec.id)
+                    // }
+                  }}
+                  columns={this.columns}
+                  onSelectRow={this.handleSelectRows}
+                  onChange={this.handleStandardTableChange}
+                />
+              </Col>
+              <Col span={12}>
+                <StandardTable
+                  rowKey="id"
+                  // selectedRows={selectedRows}
+                  // loading={loading}
+                  data={{
+                    list: userList
+                  }}
+                  scroll={{ x: 1000, y: 500 }}
+                  title={() => {
+                    return <div>成员列表</div>
+                  }}
+                  columns={this.childrenColumnName}
+                  // onSelectRow={this.handleSelectRows}
+                  onChange={this.handleStandardTableChange}
+                />
+              </Col>
+            </Row>
+            {/* <StandardTable
               rowKey="id"
               selectedRows={selectedRows}
               loading={loading}
@@ -312,7 +364,7 @@ class TableList extends Component<TableListProps, TableListState> {
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
-            />
+            /> */}
           </div>
         </Card>
         <CreateForm {...parentMethods} hasVal={false} modalVisible={modalVisible} />

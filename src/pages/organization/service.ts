@@ -8,11 +8,11 @@ export async function detail(id: string) {
 }
 
 // 通过组织ID搜索用户分页记录
-export async function user_node(id: string) {
+export async function user_node(id: string, params: {
+  flag: boolean;
+}) {
   return request(`/api/biz/user/node/${id}`, {
-    params: {
-      flag: false
-    },
+    params,
     method: 'POST'
   });
 }

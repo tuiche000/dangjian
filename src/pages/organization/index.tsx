@@ -75,10 +75,48 @@ class TableList extends Component<TableListProps, TableListState> {
     userList: []
   };
 
+  childrenColumnName: StandardTableColumnProps[] = [
+    {
+      title: '用户名',
+      dataIndex: 'username',
+    },
+    {
+      title: '名字',
+      dataIndex: 'name',
+    },
+    {
+      title: '电话',
+      dataIndex: 'phone',
+    },
+    {
+      title: '单位',
+      dataIndex: 'departmentName',
+    },
+    
+    {
+      title: '积分',
+      dataIndex: 'total',
+    },
+    // {
+    //   title: '操作',
+    //   fixed: 'right',
+    //   width: 150,
+    //   render: (text, record) => (
+    //     <Fragment>
+    //       <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
+    //       <Divider type="vertical" />
+    //       <a onClick={() => this.handleDel(record)}>{record.enabled ? '停用' : '启用'}</a>
+    //     </Fragment>
+    //   ),
+    // },
+  ]
   columns: StandardTableColumnProps[] = [
     {
       title: '名字',
       dataIndex: 'name',
+      render: (text, record) => {
+        return <a onClick={() => this.POST_user_node(record)}>{text}</a>
+      }
     },
     {
       title: '所属单位',
@@ -113,8 +151,10 @@ class TableList extends Component<TableListProps, TableListState> {
     this.handleQuery();
   }
 
-  async POST_user_node(id: string) {
-    const res = await user_node(id)
+  async POST_user_node(record) {
+    const res = await user_node(record.id, {
+      flag: record.departmentId ? false : true
+    })
     // console.log(res)
     this.setState({
       userList: res.data
@@ -327,12 +367,6 @@ class TableList extends Component<TableListProps, TableListState> {
                     return <div>组织列表</div>
                   }}
                   scroll={{ x: 800, y: 300 }}
-                  onExpand={(exp, rec) => {
-                    this.POST_user_node(rec.id)
-                    // if (exp) {
-                    //   this.POST_user_node(rec.id)
-                    // }
-                  }}
                   columns={this.columns}
                   onSelectRow={this.handleSelectRows}
                   onChange={this.handleStandardTableChange}

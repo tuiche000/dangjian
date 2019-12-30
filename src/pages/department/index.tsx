@@ -113,6 +113,9 @@ class TableList extends Component<TableListProps, TableListState> {
     {
       title: '名字',
       dataIndex: 'name',
+      render: (text, record) => {
+        return <a onClick={() => this.POST_user_node(record)}>{text}</a>
+      }
     },
     {
       title: '所属单位',
@@ -147,8 +150,10 @@ class TableList extends Component<TableListProps, TableListState> {
     this.handleQuery();
   }
 
-  async POST_user_node(id: string) {
-    const res = await user_node(id)
+  async POST_user_node(record) {
+    const res = await user_node(record.id, {
+      flag: record.departmentId ? false : true
+    })
     // console.log(res)
     this.setState({
       userList: res.data
@@ -361,12 +366,6 @@ class TableList extends Component<TableListProps, TableListState> {
                     return <div>组织列表</div>
                   }}
                   scroll={{ x: 800, y: 300 }}
-                  onExpand={(exp, rec) => {
-                    this.POST_user_node(rec.id)
-                    // if (exp) {
-                    //   this.POST_user_node(rec.id)
-                    // }
-                  }}
                   columns={this.columns}
                   onSelectRow={this.handleSelectRows}
                   onChange={this.handleStandardTableChange}

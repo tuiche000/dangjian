@@ -12,12 +12,12 @@ export async function desktop_count() {
   });
 }
 export async function desktop_activity() {
-  return request(`/api/biz/desktop/activity`, {
+  return request(`/api/biz/desktop/activity/6`, {
     method: 'GET',
   });
 }
 export async function desktop_checkin() {
-  return request(`/api/biz/desktop/checkin`, {
+  return request(`/api/biz/desktop/checkin/6`, {
     method: 'GET',
   });
 }

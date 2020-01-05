@@ -32,8 +32,8 @@ const errorHandler = (error: { response: Response }) => {
   console.log('error', response);
 
   if (response && response.status) {
-    const errorText = response.statusText || codeMessage[response.status];
-    const { status, url } = response;
+    // const errorText = response.statusText || codeMessage[response.status];
+    // const { status, url } = response;
 
     if ((response.status == 401 || response.status == 400 || response.status == 403) && window.location.pathname != '/user/login') {
       window.location.replace(

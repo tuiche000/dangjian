@@ -16,6 +16,7 @@ export interface CurrentUser {
   total: number
   phonechecked: boolean
   departmentName: string
+  organizationName: string
   // avatar?: string;
   // name?: string;
   // title?: string;

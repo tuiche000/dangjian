@@ -18,9 +18,14 @@ export async function detail(id: string) {
   });
 }
 
-export async function query(params: TableListParams) {
+export async function query(data: TableListParams) {
   return request('/api/biz/checkin/query', {
-    params,
+    method: 'POST',
+    params: {
+      pageSize: data.pageSize,
+      pageNo: data.pageNo,
+    },
+    data,
   });
 }
 

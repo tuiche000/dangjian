@@ -1,4 +1,4 @@
-import { Button, Card, Col, Divider, Form, Input, Row, message, Popconfirm } from 'antd';
+import { Button, Card, Col, Divider, Form, Input, Row, message, Popconfirm, Select, DatePicker } from 'antd';
 import React, { Component, Fragment } from 'react';
 
 import { Dispatch, Action } from 'redux';
@@ -13,7 +13,7 @@ import { TableListItem, TableListPagination, TableListParams, AddParams } from '
 import { Common_Enum } from '@/services/common';
 import { audit } from './service';
 import DetailDrawer from './components/DetailDrawer';
-
+import moment from 'moment';
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -262,7 +262,10 @@ class TableList extends Component<TableListProps, TableListState> {
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-
+      if (fieldsValue.time) {
+        fieldsValue.beginDate = moment(fieldsValue.time[0]).format('YYYY-MM-DD');
+        fieldsValue.endDate = moment(fieldsValue.time[1]).format('YYYY-MM-DD');
+      }
       const values = {
         ...fieldsValue,
         updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
@@ -351,7 +354,33 @@ class TableList extends Component<TableListProps, TableListState> {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="关键字">
-              {getFieldDecorator('keyword')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('keyword')(<Input placeholder="请输入关键字" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="报到类型">
+              {getFieldDecorator('partyType')(
+                <Select
+                  // mode="multiple"
+                  style={{ width: '100%' }}
+                  placeholder="请选择"
+                  onChange={e => {
+                    console.log(e);
+                  }}
+                >
+                  <Select.Option value="CPC">
+                    党员
+                  </Select.Option>
+                  <Select.Option value="ORG_APPLY">
+                    党组织报到
+                  </Select.Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="报到时间">
+              {getFieldDecorator('time')(<DatePicker.RangePicker />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -401,13 +430,13 @@ class TableList extends Component<TableListProps, TableListState> {
               {/* <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
               </Button> */}
-              {selectedRows.length > 0 && (
+              {/* {selectedRows.length > 0 && (
                 <span>
                   <Button type="danger" onClick={() => this.handleMenuClick({ key: 'remove' })}>
                     批量删除
                   </Button>
                 </span>
-              )}
+              )} */}
             </div>
             <StandardTable
               rowKey="id"

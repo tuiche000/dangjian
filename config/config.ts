@@ -131,7 +131,7 @@ export default {
               icon: 'home',
               path: '/home',
               component: './home',
-              authority: ['ROLE_ADMINISTRATOR'],
+              authority: ['ROLE_ADMINISTRATOR', 'ROLE_ORGADMIN'],
             },
             {
               name: 'activity',
@@ -167,24 +167,26 @@ export default {
               name: 'point',
               icon: 'money-collect',
               path: '/point',
-              authority: ['ROLE_ADMINISTRATOR'],
               routes: [
                 {
                   name: 'point-point',
                   // icon: 'smile',
                   path: '/point/point',
+                  authority: ['ROLE_ADMINISTRATOR', 'ROLE_ORGADMIN'],
                   component: './point',
                 },
                 {
                   name: 'point-pointRank',
                   // icon: 'smile',
                   path: '/point/pointRank',
+                  authority: ['ROLE_ADMINISTRATOR'],
                   component: './pointRank',
                 },
                 {
                   name: 'point-pointRule',
                   // icon: 'smile',
                   path: '/point/pointRule',
+                  authority: ['ROLE_ADMINISTRATOR'],
                   component: './pointRule',
                 },
               ],

@@ -226,6 +226,9 @@ export default class Home extends React.Component<TableListProps, DataState> {
                 <Col>
                   <Title level={4}>最新报到</Title>
                 </Col>
+                <Col>
+                  <Link to="/checkin">更多</Link>
+                </Col>
               </Row>}
               bordered
               dataSource={this.state.checkin}

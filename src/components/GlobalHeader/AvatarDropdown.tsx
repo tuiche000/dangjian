@@ -33,7 +33,7 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
   };
 
   render(): React.ReactNode {
-    const { currentUser = { avatar: '', name: '' }, menu } = this.props;
+    const { currentUser = { avatar: '', name: '', organizationName: '' }, menu } = this.props;
     console.log(currentUser)
     const menuHeaderDropdown = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={this.onMenuClick}>
@@ -64,7 +64,7 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
           <Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" />
           <span className={styles.name}>{currentUser.name}</span>
         </span> */}
-        <span className={`${styles.action} ${styles.account}`}>{currentUser.name}</span>
+        <span className={`${styles.action} ${styles.account}`}>{currentUser.organizationName || currentUser.name}</span>
       </HeaderDropdown>
     ) : (
       <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />

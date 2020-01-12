@@ -10,6 +10,7 @@ import { StateType } from './model';
 import CreateForm from './components/CreateForm';
 import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
 import { TableListItem, TableListPagination, TableListParams, AddParams } from './data.d';
+import { reset } from './service';
 import { Common_Enum } from '@/services/common';
 
 import styles from './style.less';
@@ -119,6 +120,8 @@ class TableList extends Component<TableListProps, TableListState> {
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
           <Divider type="vertical" />
           <a onClick={() => this.handleDel(record)}>{record.enabled ? '停用' : '启用'}</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.handleResetpass(record.username)}>重置密码</a>
         </Fragment>
       ),
     },
@@ -134,6 +137,14 @@ class TableList extends Component<TableListProps, TableListState> {
     this.setState({
       types: res.data,
     });
+  }
+
+  handleResetpass = (username: string) => {
+    reset(username).then((res: ResParams2) => {
+      if (res.code == "0") {
+        message.success('重置成功');
+      }
+    })
   }
 
   handleStandardTableChange = (

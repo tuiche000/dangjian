@@ -49,3 +49,9 @@ export async function update(params: TableListParams) {
     },
   });
 }
+
+export async function reset(username: String) {
+  return request(`/api/biz/user/${username}/reset`, {
+    method: 'PUT',
+  });
+}

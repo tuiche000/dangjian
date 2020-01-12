@@ -92,10 +92,6 @@ class TableList extends Component<TableListProps, TableListState> {
       dataIndex: 'departmentName',
     },
     {
-      title: '党组织名称',
-      dataIndex: 'organizationName',
-    },
-    {
       title: '报到时间',
       dataIndex: 'checkinTime',
     },
@@ -106,6 +102,61 @@ class TableList extends Component<TableListProps, TableListState> {
     {
       title: '联系方式',
       dataIndex: 'phone',
+    },
+    {
+      title: '审核状态',
+      dataIndex: 'auditType',
+      render: (val: string) => this.state.auditType[val],
+    },
+    {
+      title: '发放积分',
+      dataIndex: 'point',
+    },
+
+    {
+      title: '操作',
+      render: (record) => {
+        let el = record.auditType == 'AUDITING' ? (
+          <Fragment>
+            <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>查看</a>
+            <Divider type="vertical" />
+            <Popconfirm
+              title="通过审核吗？"
+              onConfirm={() => this.handleAudit(record, true)}
+              onCancel={() => this.handleAudit(record, false)}
+              okText="通过"
+              cancelText="拒绝"
+            >
+              <a>审核</a>
+            </Popconfirm>
+          </Fragment>
+        ) : (
+            <div>
+              <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>查看</a>
+            </div>
+          );
+        return el;
+      },
+    },
+  ];
+
+  columns2: StandardTableColumnProps[] = [
+    {
+      title: '报到类型',
+      dataIndex: 'partyType',
+      render: (val: string) => this.state.partyType[val],
+    },
+    {
+      title: '报到单位',
+      dataIndex: 'departmentName',
+    },
+    {
+      title: '党组织名称',
+      dataIndex: 'organizationName',
+    },
+    {
+      title: '报到时间',
+      dataIndex: 'checkinTime',
     },
     {
       title: '审核状态',
@@ -411,7 +462,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
     const { type } = this.state;
 
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
+    const { selectedRows, modalVisible, updateModalVisible, stepFormValues, formValues } = this.state;
 
     const parentMethods = {
       handleAdd: this.handleAdd,
@@ -443,7 +494,7 @@ class TableList extends Component<TableListProps, TableListState> {
               selectedRows={selectedRows}
               loading={loading}
               data={data}
-              columns={this.columns}
+              columns={formValues.partyType == 'ORG_APPLY' ? this.columns2 : this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
             />

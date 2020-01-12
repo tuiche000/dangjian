@@ -10,6 +10,7 @@ export interface TableListItem {
   target: string;
   displayOrder: number;
   enabled: boolean;
+  username: string;
 }
 
 export interface TableListPagination {

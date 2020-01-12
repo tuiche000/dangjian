@@ -25,7 +25,10 @@ export async function query(data: TableListParams) {
       pageSize: data.pageSize,
       pageNo: data.pageNo,
     },
-    data,
+    data: {
+      partyType: "CPC",
+      ...data
+    },
   });
 }
 

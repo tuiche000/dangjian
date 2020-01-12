@@ -1,9 +1,11 @@
-import { Avatar, Icon, Menu, Spin } from 'antd';
+import { Avatar, Icon, Menu, Spin, message } from 'antd';
 import { ClickParam } from 'antd/es/menu';
 import { FormattedMessage } from 'umi-plugin-react/locale';
 import React from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+import ChangePass from './ChangePass'
+import request from '@/utils/request';
 
 import { ConnectProps, ConnectState } from '@/models/connect';
 import { CurrentUser } from '@/models/user';
@@ -11,11 +13,44 @@ import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
 
 export interface GlobalHeaderRightProps extends ConnectProps {
-  currentUser?: CurrentUser;
+  currentUser: CurrentUser;
   menu?: boolean;
 }
 
 class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
+
+  state = {
+    modalVisible: false,
+  }
+
+  handleModalVisible = (flag: boolean) => {
+    this.setState({
+      modalVisible: !!flag
+    })
+  }
+
+  handlePut = (fieldsValue: {
+    username: string;
+    id: string;
+    password: string;
+  }) => {
+    const { currentUser } = this.props;
+    request('/api/biz/user', {
+      method: 'PUT',
+      data: {
+        ...currentUser,
+        ...fieldsValue
+      }
+    }).then((res: ResParams2) => {
+      if (res.code == '0') {
+        message.success('修改成功')
+        this.setState({
+          modalVisible: false
+        })
+      }
+    })
+  }
+
   onMenuClick = (event: ClickParam) => {
     const { key } = event;
 
@@ -26,6 +61,13 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
           type: 'login/logout',
         });
       }
+
+      return;
+    }
+    if (key === 'changePass') {
+      this.setState({
+        modalVisible: true,
+      })
 
       return;
     }
@@ -50,25 +92,33 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
           </Menu.Item>
         )}
         {menu && <Menu.Divider />} */}
-
+        <Menu.Item key="changePass">
+          <Icon type="setting" />
+          <FormattedMessage id="menu.account.password" defaultMessage="account settings" />
+        </Menu.Item>
         <Menu.Item key="logout">
           <Icon type="logout" />
           <FormattedMessage id="menu.account.logout" defaultMessage="logout" />
         </Menu.Item>
+
       </Menu>
     );
 
     return currentUser && currentUser.name ? (
-      <HeaderDropdown overlay={menuHeaderDropdown}>
-        {/* <span className={`${styles.action} ${styles.account}`}>
+      <span>
+        <HeaderDropdown overlay={menuHeaderDropdown}>
+          {/* <span className={`${styles.action} ${styles.account}`}>
           <Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" />
           <span className={styles.name}>{currentUser.name}</span>
         </span> */}
-        <span className={`${styles.action} ${styles.account}`}>{currentUser.organizationName || currentUser.name}</span>
-      </HeaderDropdown>
+          <span className={`${styles.action} ${styles.account}`}>{currentUser.organizationName || currentUser.name}</span>
+        </HeaderDropdown>
+        <ChangePass handleModalVisible={this.handleModalVisible} handlePut={this.handlePut} modalVisible={this.state.modalVisible}></ChangePass>
+      </span>
+
     ) : (
-      <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
-    );
+        <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
+      );
   }
 }
 export default connect(({ user }: ConnectState) => ({

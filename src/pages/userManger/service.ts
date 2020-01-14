@@ -1,21 +1,22 @@
 import request from '@/utils/request';
 import { TableListParams, AddParams } from './data.d';
 
+export async function getUserSelf() {
+  return request('/api/biz/user/self', {});
+}
+
 export async function detail(id: string) {
   return request(`/api/biz/user/${id}`, {
     method: 'GET',
   });
 }
 
-export async function status(params: {
-  id: string;
-  enabled: boolean;
-}) {
+export async function status(params: { id: string; enabled: boolean }) {
   return request(`/api/biz/user/status/${params.id}`, {
     method: 'GET',
     params: {
-      enabled: params.enabled
-    }
+      enabled: params.enabled,
+    },
   });
 }
 

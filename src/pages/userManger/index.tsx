@@ -10,7 +10,7 @@ import { StateType } from './model';
 import CreateForm from './components/CreateForm';
 import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
 import { TableListItem, TableListPagination, TableListParams, AddParams } from './data.d';
-import { reset } from './service';
+import { reset, getUserSelf } from './service';
 import { Common_Enum } from '@/services/common';
 
 import styles from './style.less';
@@ -44,6 +44,7 @@ interface TableListState {
   types: { [key: string]: string };
   pageNo: number;
   pageSize: number;
+  self: any;
 }
 
 /* eslint react/no-multi-comp:0 */
@@ -74,6 +75,7 @@ class TableList extends Component<TableListProps, TableListState> {
     types: {},
     pageNo: 1,
     pageSize: 10,
+    self: {},
   };
 
   columns: StandardTableColumnProps[] = [
@@ -115,21 +117,38 @@ class TableList extends Component<TableListProps, TableListState> {
     // },
     {
       title: '操作',
-      render: (text, record) => (
-        <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleDel(record)}>{record.enabled ? '停用' : '启用'}</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleResetpass(record.username)}>重置密码</a>
-        </Fragment>
-      ),
+      render: (text, record) => {
+        if (this.state.self.roles.includes('ROLE_ADMINISTRATOR')) {
+          return (
+            <Fragment>
+              <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
+              <Divider type="vertical" />
+              <a onClick={() => this.handleDel(record)}>{record.enabled ? '停用' : '启用'}</a>
+              <Divider type="vertical" />
+              <a onClick={() => this.handleResetpass(record.username)}>重置密码</a>
+            </Fragment>
+          );
+        } else {
+          return (
+            <Fragment>
+              <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
+              <Divider type="vertical" />
+              <a onClick={() => this.handleDel(record)}>{record.enabled ? '停用' : '启用'}</a>
+            </Fragment>
+          );
+        }
+      },
     },
   ];
 
   componentDidMount() {
     this.handleQuery();
     this.fetchCommon_Enum('PARTY_TYPE');
+    getUserSelf().then(res => {
+      this.setState({
+        self: res.data,
+      });
+    });
   }
 
   async fetchCommon_Enum(name: string) {
@@ -141,11 +160,11 @@ class TableList extends Component<TableListProps, TableListState> {
 
   handleResetpass = (username: string) => {
     reset(username).then((res: ResParams2) => {
-      if (res.code == "0") {
+      if (res.code == '0') {
         message.success('重置成功');
       }
-    })
-  }
+    });
+  };
 
   handleStandardTableChange = (
     pagination: Partial<TableListPagination>,
@@ -213,7 +232,7 @@ class TableList extends Component<TableListProps, TableListState> {
       type: 'namespace_userManger/remove',
       payload: {
         id: record.id,
-        enabled: !record.enabled
+        enabled: !record.enabled,
       },
       callback: (res: ResParams2) => {
         if (res.code === '0') {
@@ -384,6 +403,19 @@ class TableList extends Component<TableListProps, TableListState> {
             <div className={styles.tableListOperator}>
               <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
+              </Button>
+              <Button
+                icon="export"
+                type="primary"
+                onClick={() => {
+                  window.location.href = `${
+                    require('@/../config.json').apiHost
+                  }/api/biz/user/query/export?access_token=${localStorage.getItem(
+                    'access_token',
+                  )}&orgfrom=TREETS`;
+                }}
+              >
+                导出
               </Button>
               {selectedRows.length > 0 && (
                 <span>

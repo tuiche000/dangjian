@@ -72,7 +72,7 @@ class TableList extends Component<TableListProps, TableListState> {
     type: 'add',
     pageNo: 1,
     pageSize: 10,
-    userList: []
+    userList: [],
   };
 
   childrenColumnName: StandardTableColumnProps[] = [
@@ -92,7 +92,7 @@ class TableList extends Component<TableListProps, TableListState> {
       title: '单位',
       dataIndex: 'departmentName',
     },
-    
+
     {
       title: '积分',
       dataIndex: 'total',
@@ -109,14 +109,14 @@ class TableList extends Component<TableListProps, TableListState> {
     //     </Fragment>
     //   ),
     // },
-  ]
+  ];
   columns: StandardTableColumnProps[] = [
     {
       title: '名字',
       dataIndex: 'name',
       render: (text, record) => {
-        return <a onClick={() => this.POST_user_node(record)}>{text}</a>
-      }
+        return <a onClick={() => this.POST_user_node(record)}>{text}</a>;
+      },
     },
     {
       title: '所属单位',
@@ -153,12 +153,12 @@ class TableList extends Component<TableListProps, TableListState> {
 
   async POST_user_node(record) {
     const res = await user_node(record.id, {
-      flag: record.departmentId ? false : true
-    })
+      flag: record.departmentId ? false : true,
+    });
     // console.log(res)
     this.setState({
-      userList: res.data
-    })
+      userList: res.data,
+    });
   }
 
   handleStandardTableChange = (
@@ -347,6 +347,22 @@ class TableList extends Component<TableListProps, TableListState> {
               <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
               </Button>
+              {/* <Button icon="import" type="primary" onClick={() => this.handleModalVisible(true)}>
+                导入
+              </Button> */}
+              <Button
+                icon="export"
+                type="primary"
+                onClick={() => {
+                  window.location.href = `${
+                    require('@/../config.json').apiHost
+                  }/api/biz/organization/query/export?access_token=${localStorage.getItem(
+                    'access_token',
+                  )}&orgfrom=TREETS`;
+                }}
+              >
+                导出
+              </Button>
               {selectedRows.length > 0 && (
                 <span>
                   <Button type="danger" onClick={() => this.handleMenuClick({ key: 'remove' })}>
@@ -357,14 +373,13 @@ class TableList extends Component<TableListProps, TableListState> {
             </div>
             <Row gutter={16}>
               <Col span={12}>
-
                 <StandardTable
                   rowKey="id"
                   selectedRows={selectedRows}
                   loading={loading}
                   data={data}
                   title={() => {
-                    return <div>组织列表</div>
+                    return <div>组织列表</div>;
                   }}
                   scroll={{ x: 800, y: 300 }}
                   columns={this.columns}
@@ -378,11 +393,11 @@ class TableList extends Component<TableListProps, TableListState> {
                   // selectedRows={selectedRows}
                   // loading={loading}
                   data={{
-                    list: userList
+                    list: userList,
                   }}
                   scroll={{ x: 1000, y: 500 }}
                   title={() => {
-                    return <div>成员列表</div>
+                    return <div>成员列表</div>;
                   }}
                   columns={this.childrenColumnName}
                   // onSelectRow={this.handleSelectRows}

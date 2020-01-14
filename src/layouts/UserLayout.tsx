@@ -30,33 +30,33 @@ const UserLayout: React.SFC<UserLayoutProps> = props => {
   const { breadcrumb } = getMenuData(routes);
 
   return (
-    <DocumentTitle
-      title={getPageTitle({
-        pathname: location.pathname,
-        breadcrumb,
-        formatMessage,
-        ...props,
-      })}
-    >
-      <div className={styles.container}>
-        <div className={styles.lang}>
-          <SelectLang />
-        </div>
-        <div className={styles.content}>
-          <div className={styles.top}>
-            <div className={styles.header}>
-              <Link to="/">
-                <img alt="logo" className={styles.logo} src={logo} />
-                <span className={styles.title}>潞源党建系统</span>
-              </Link>
-            </div>
-            {/* <div className={styles.desc}>Ant Design 是西湖区最具影响力的 Web 设计规范</div> */}
+    <>
+      <DocumentTitle
+        title={getPageTitle({
+          pathname: location.pathname,
+          breadcrumb,
+          formatMessage,
+          ...props,
+        })}
+      >
+        <div className={styles.container}>
+          <div className={styles.lang}>
+            <SelectLang />
           </div>
-          {children}
+          <div className={styles.content}>
+            <div className={styles.top}>
+              <div className={styles.header}>
+                <Link to="/">
+                  <img alt="logo" className={styles.logo} src={logo} />
+                  <span className={styles.title}>潞源党建系统</span>
+                </Link>
+              </div>
+            </div>
+            {children}
+          </div>
         </div>
-        {/* <DefaultFooter /> */}
-      </div>
-    </DocumentTitle>
+      </DocumentTitle>
+    </>
   );
 };
 

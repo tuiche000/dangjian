@@ -1,4 +1,16 @@
-import { Button, Card, Col, Divider, Form, Input, Row, message, Popconfirm, Select, DatePicker } from 'antd';
+import {
+  Button,
+  Card,
+  Col,
+  Divider,
+  Form,
+  Input,
+  Row,
+  message,
+  Popconfirm,
+  Select,
+  DatePicker,
+} from 'antd';
 import React, { Component, Fragment } from 'react';
 
 import { Dispatch, Action } from 'redux';
@@ -115,24 +127,29 @@ class TableList extends Component<TableListProps, TableListState> {
 
     {
       title: '操作',
-      render: (record) => {
-        let el = record.auditType == 'AUDITING' ? (
-          <Fragment>
-            <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>查看</a>
-            <Divider type="vertical" />
-            <Popconfirm
-              title="通过审核吗？"
-              onConfirm={() => this.handleAudit(record, true)}
-              onCancel={() => this.handleAudit(record, false)}
-              okText="通过"
-              cancelText="拒绝"
-            >
-              <a>审核</a>
-            </Popconfirm>
-          </Fragment>
-        ) : (
+      render: record => {
+        let el =
+          record.auditType == 'AUDITING' ? (
+            <Fragment>
+              <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>
+                查看
+              </a>
+              <Divider type="vertical" />
+              <Popconfirm
+                title="通过审核吗？"
+                onConfirm={() => this.handleAudit(record, true)}
+                onCancel={() => this.handleAudit(record, false)}
+                okText="通过"
+                cancelText="拒绝"
+              >
+                <a>审核</a>
+              </Popconfirm>
+            </Fragment>
+          ) : (
             <div>
-              <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>查看</a>
+              <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>
+                查看
+              </a>
             </div>
           );
         return el;
@@ -155,6 +172,14 @@ class TableList extends Component<TableListProps, TableListState> {
       dataIndex: 'organizationName',
     },
     {
+      title: '联系人',
+      dataIndex: 'contactor',
+    },
+    {
+      title: '联系方式',
+      dataIndex: 'mobile',
+    },
+    {
       title: '报到时间',
       dataIndex: 'checkinTime',
     },
@@ -170,24 +195,29 @@ class TableList extends Component<TableListProps, TableListState> {
 
     {
       title: '操作',
-      render: (record) => {
-        let el = record.auditType == 'AUDITING' ? (
-          <Fragment>
-            <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>查看</a>
-            <Divider type="vertical" />
-            <Popconfirm
-              title="通过审核吗？"
-              onConfirm={() => this.handleAudit(record, true)}
-              onCancel={() => this.handleAudit(record, false)}
-              okText="通过"
-              cancelText="拒绝"
-            >
-              <a>审核</a>
-            </Popconfirm>
-          </Fragment>
-        ) : (
+      render: record => {
+        let el =
+          record.auditType == 'AUDITING' ? (
+            <Fragment>
+              <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>
+                查看
+              </a>
+              <Divider type="vertical" />
+              <Popconfirm
+                title="通过审核吗？"
+                onConfirm={() => this.handleAudit(record, true)}
+                onCancel={() => this.handleAudit(record, false)}
+                okText="通过"
+                cancelText="拒绝"
+              >
+                <a>审核</a>
+              </Popconfirm>
+            </Fragment>
+          ) : (
             <div>
-              <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>查看</a>
+              <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>
+                查看
+              </a>
             </div>
           );
         return el;
@@ -343,7 +373,7 @@ class TableList extends Component<TableListProps, TableListState> {
     this.setState({
       drawerVisible: !!flag,
       stepFormValues: record || {},
-      type: record ? 'drawer' : 'add'
+      type: record ? 'drawer' : 'add',
     });
   };
 
@@ -410,7 +440,9 @@ class TableList extends Component<TableListProps, TableListState> {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="报到类型">
-              {getFieldDecorator('partyType')(
+              {getFieldDecorator('partyType', {
+                initialValue: 'CPC',
+              })(
                 <Select
                   // mode="multiple"
                   style={{ width: '100%' }}
@@ -419,13 +451,9 @@ class TableList extends Component<TableListProps, TableListState> {
                     console.log(e);
                   }}
                 >
-                  <Select.Option value="CPC">
-                    党员
-                  </Select.Option>
-                  <Select.Option value="ORG_APPLY">
-                    党组织报到
-                  </Select.Option>
-                </Select>
+                  <Select.Option value="CPC">党员</Select.Option>
+                  <Select.Option value="ORG_APPLY">党组织报到</Select.Option>
+                </Select>,
               )}
             </FormItem>
           </Col>
@@ -458,11 +486,17 @@ class TableList extends Component<TableListProps, TableListState> {
       namespace_checkin: { data },
       loading,
     } = this.props;
-    console.log(data)
+    console.log(data);
 
     const { type } = this.state;
 
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues, formValues } = this.state;
+    const {
+      selectedRows,
+      modalVisible,
+      updateModalVisible,
+      stepFormValues,
+      formValues,
+    } = this.state;
 
     const parentMethods = {
       handleAdd: this.handleAdd,

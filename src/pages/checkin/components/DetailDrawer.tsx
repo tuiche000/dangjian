@@ -2,7 +2,7 @@ import { Drawer, Divider, Col, Row } from 'antd';
 
 import React, { useState, useEffect } from 'react';
 import { TableListItem } from '../data.d';
-import { detail } from '../service'
+import { detail } from '../service';
 
 const pStyle = {
   fontSize: 16,
@@ -37,7 +37,7 @@ interface DetailDrawerProps {
   drawerVisible: boolean;
   partyType: any;
   auditType: any;
-  handleDrawerVisible: (flag?: boolean, record?: Partial<TableListItem>) => void
+  handleDrawerVisible: (flag?: boolean, record?: Partial<TableListItem>) => void;
   values: Partial<TableListItem>;
 }
 const DetailDrawer: React.FC<DetailDrawerProps> = props => {
@@ -45,14 +45,11 @@ const DetailDrawer: React.FC<DetailDrawerProps> = props => {
 
   const [detailInfo, setDetailInfo] = useState();
   useEffect(() => {
-    detail(values.id).then((res: {
-      code: string;
-      data: TableListItem
-    }) => {
-      if (res.code == "0") {
-        setDetailInfo(res.data)
+    detail(values.id).then((res: { code: string; data: TableListItem }) => {
+      if (res.code == '0') {
+        setDetailInfo(res.data);
       }
-    })
+    });
   }, []);
 
   return (
@@ -63,7 +60,7 @@ const DetailDrawer: React.FC<DetailDrawerProps> = props => {
       onClose={() => handleDrawerVisible(false, values)}
       afterVisibleChange={() => {
         if (!drawerVisible) {
-          handleDrawerVisible(false)
+          handleDrawerVisible(false);
         }
       }}
       visible={drawerVisible}
@@ -72,39 +69,52 @@ const DetailDrawer: React.FC<DetailDrawerProps> = props => {
       {/* <p style={pStyle}>Personal</p> */}
       <Divider></Divider>
       <Row>
-
         <Col span={24}>
-          <DescriptionItem title="报到类型" content={detailInfo && partyType[detailInfo.partyType]} />
+          <DescriptionItem
+            title="报到类型"
+            content={detailInfo && partyType[detailInfo.partyType]}
+          />
         </Col>
         <Col span={24}>
           <DescriptionItem title="报到单位" content={detailInfo && detailInfo.departmentName} />
         </Col>
-        {
-          detailInfo && detailInfo.organizationName ? (
-            <Col span={24}>
-              <DescriptionItem title="党组织名称" content={detailInfo && detailInfo.organizationName} />
-            </Col>
-          ) : null
-        }
+        {detailInfo && detailInfo.organizationName ? (
+          <Col span={24}>
+            <DescriptionItem
+              title="党组织名称"
+              content={detailInfo && detailInfo.organizationName}
+            />
+          </Col>
+        ) : null}
         <Col span={24}>
           <DescriptionItem title="报到时间" content={detailInfo && detailInfo.checkinTime} />
         </Col>
-        {
-          detailInfo && detailInfo.checkorName ? (
-            <Col span={24}>
-              <DescriptionItem title="联系人" content={detailInfo && detailInfo.checkorName} />{' '}
-            </Col>
-          ) : null
-        }
-        {
-          detailInfo && detailInfo.phone ? (
-            <Col span={24}>
-              <DescriptionItem title="联系方式" content={detailInfo && detailInfo.phone} />{' '}
-            </Col>
-          ) : null
-        }
+        {detailInfo && detailInfo.checkorName ? (
+          <Col span={24}>
+            <DescriptionItem title="联系人" content={detailInfo.checkorName} />{' '}
+          </Col>
+        ) : null}
+        {detailInfo && detailInfo.phone ? (
+          <Col span={24}>
+            <DescriptionItem title="联系方式" content={detailInfo.phone} />{' '}
+          </Col>
+        ) : null}
+        {detailInfo && detailInfo.contactor ? (
+          <Col span={24}>
+            <DescriptionItem title="联系人" content={detailInfo.contactor} />{' '}
+          </Col>
+        ) : null}
+        {detailInfo && detailInfo.mobile ? (
+          <Col span={24}>
+            <DescriptionItem title="联系方式" content={detailInfo.mobile} />{' '}
+          </Col>
+        ) : null}
+
         <Col span={24}>
-          <DescriptionItem title="审核状态" content={detailInfo && auditType[detailInfo.auditType]} />
+          <DescriptionItem
+            title="审核状态"
+            content={detailInfo && auditType[detailInfo.auditType]}
+          />
         </Col>
         <Col span={24}>
           <DescriptionItem title="发放积分" content={detailInfo && detailInfo.point} />

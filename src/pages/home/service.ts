@@ -11,9 +11,14 @@ export async function desktop_count() {
     method: 'GET',
   });
 }
-export async function desktop_activity() {
+export async function desktop_activity(params: {
+  beginDate?: Date;
+  endDate?: Date;
+  keyword?: string;
+}) {
   return request(`/api/biz/desktop/activity/6`, {
-    method: 'GET',
+    method: 'POST',
+    data: params,
   });
 }
 export async function desktop_checkin() {
@@ -24,6 +29,6 @@ export async function desktop_checkin() {
 export async function desktop_board(params: any) {
   return request(`/api/biz/desktop/board`, {
     method: 'GET',
-    params
+    params,
   });
 }

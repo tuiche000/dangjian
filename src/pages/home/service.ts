@@ -12,8 +12,8 @@ export async function desktop_count() {
   });
 }
 export async function desktop_activity(params: {
-  beginDate?: Date;
-  endDate?: Date;
+  beginDate?: string;
+  endDate?: string;
   keyword?: string;
 }) {
   return request(`/api/biz/desktop/activity/6`, {

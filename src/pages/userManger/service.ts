@@ -22,7 +22,7 @@ export async function status(params: { id: string; enabled: boolean }) {
 
 export async function query(params: TableListParams) {
   return request('/api/biz/user/query', {
-    params,
+    data: params,
     method: 'POST',
   });
 }

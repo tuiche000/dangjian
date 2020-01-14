@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Row, Col, Table, Typography, List, Input } from 'antd';
+import { Card, Row, Col, Table, Typography, List, DatePicker } from 'antd';
 const { Title } = Typography;
 import DetailDrawer from './DetailDrawer';
 import Link from 'umi/link';
@@ -7,6 +7,7 @@ import { connect } from 'dva';
 import { StateType } from './model';
 import * as service from './service';
 import { Dispatch, Action } from 'redux';
+import { string } from 'prop-types';
 
 interface TableListProps {
   dispatch: Dispatch<Action<'namespace_home/count'>>;
@@ -263,7 +264,19 @@ export default class Home extends React.Component<TableListProps, DataState> {
                       <Title level={4}>最新活动</Title>
                     </Col>
                     <Col>
-                      <Input
+                      <DatePicker.RangePicker onChange={(data: Date, str: string) => {
+                        service
+                          .desktop_activity({
+                            beginDate: str[0],
+                            endDate: str[1]
+                          })
+                          .then(res => {
+                            this.setState({
+                              activity: res.data,
+                            });
+                          });
+                      }} />
+                      {/* <Input
                         placeholder="搜索活动"
                         onChange={keyword => {
                           this.setState({
@@ -281,7 +294,7 @@ export default class Home extends React.Component<TableListProps, DataState> {
                               });
                             });
                         }}
-                      />
+                      /> */}
                     </Col>
                     <Col>
                       <Link to="/activity">更多</Link>

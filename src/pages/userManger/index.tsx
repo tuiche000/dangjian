@@ -45,6 +45,7 @@ interface TableListState {
   pageNo: number;
   pageSize: number;
   self: any;
+  isAdmin: boolean;
 }
 
 /* eslint react/no-multi-comp:0 */
@@ -76,6 +77,7 @@ class TableList extends Component<TableListProps, TableListState> {
     pageNo: 1,
     pageSize: 10,
     self: {},
+    isAdmin: false
   };
 
   columns: StandardTableColumnProps[] = [
@@ -118,7 +120,7 @@ class TableList extends Component<TableListProps, TableListState> {
     {
       title: '操作',
       render: (text, record) => {
-        if (this.state.self.roles.includes('ROLE_ADMINISTRATOR')) {
+        if (this.state.isAdmin) {
           return (
             <Fragment>
               <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
@@ -147,6 +149,7 @@ class TableList extends Component<TableListProps, TableListState> {
     getUserSelf().then(res => {
       this.setState({
         self: res.data,
+        isAdmin: res.data.roles.includes('ROLE_ADMINISTRATOR')
       });
     });
   }
@@ -342,18 +345,38 @@ class TableList extends Component<TableListProps, TableListState> {
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="报到类型">
+            <FormItem label="会员类型">
               {getFieldDecorator('partyType')(
-                <Select style={{ maxWidth: 220 }}>
-                  {Object.keys(types).length > 0
-                    ? Object.keys(types).map(item => {
-                        return (
-                          <Select.Option key={item} value={item}>
-                            {types[item]}
-                          </Select.Option>
-                        );
-                      })
-                    : null}
+                <Select
+                  // mode="multiple"
+                  style={{ width: '100%' }}
+                  placeholder="请选择"
+                  onChange={e => {
+                    console.log(e);
+                  }}
+                >
+                  <Select.Option value="CPC">党员</Select.Option>
+                  <Select.Option value="MASS">群众</Select.Option>
+                  <Select.Option value="ORG_APPLY">报到组织</Select.Option>
+                  <Select.Option value="ORG_TREETS">街道组织</Select.Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="报到类型">
+              {getFieldDecorator('orgfrom', {
+              })(
+                <Select
+                  // mode="multiple"
+                  style={{ width: '100%' }}
+                  placeholder="请选择"
+                  onChange={e => {
+                    console.log(e);
+                  }}
+                >
+                  <Select.Option value="TREETS">报到</Select.Option>
+                  <Select.Option value="CHECKIN">街道</Select.Option>
                 </Select>,
               )}
             </FormItem>
@@ -410,9 +433,9 @@ class TableList extends Component<TableListProps, TableListState> {
                 onClick={() => {
                   window.location.href = `${
                     require('@/../config.json').apiHost
-                  }/api/biz/user/query/export?access_token=${localStorage.getItem(
-                    'access_token',
-                  )}&orgfrom=TREETS`;
+                    }/api/biz/user/query/export?access_token=${localStorage.getItem(
+                      'access_token',
+                    )}&orgfrom=TREETS`;
                 }}
               >
                 导出

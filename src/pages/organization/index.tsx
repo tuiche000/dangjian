@@ -1,4 +1,4 @@
-import { Button, Card, Col, Divider, Form, Input, Row, message } from 'antd';
+import { Button, Card, Col, Divider, Form, Input, Row, message, Upload, Icon } from 'antd';
 import React, { Component, Fragment } from 'react';
 
 import { Dispatch, Action } from 'redux';
@@ -338,6 +338,24 @@ class TableList extends Component<TableListProps, TableListState> {
       handleUpdateModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
     };
+
+    const uploadprops = {
+      name: 'file',
+      action: `/api/biz/organization/import`,
+      // headers: {
+      //   Authorization: `Bearer ${JSON.parse(localStorage.getItem('access_token'))}`
+      // },
+      showUploadList: false,
+      onChange(info: any) {
+        if (info.file.status === 'uploading') {
+        }
+        if (info.file.status === 'done') {
+          message.success(`${info.file.name} 文件上传成功`);
+        } else if (info.file.status === 'error') {
+          message.error(`${info.file.response.message}`);
+        }
+      },
+    };
     return (
       <PageHeaderWrapper>
         <Card bordered={false}>
@@ -347,29 +365,42 @@ class TableList extends Component<TableListProps, TableListState> {
               <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
               </Button>
-              {/* <Button icon="import" type="primary" onClick={() => this.handleModalVisible(true)}>
-                导入
-              </Button> */}
               <Button
                 icon="export"
                 type="primary"
                 onClick={() => {
                   window.location.href = `${
                     require('@/../config.json').apiHost
-                  }/api/biz/organization/query/export?access_token=${localStorage.getItem(
-                    'access_token',
-                  )}&orgfrom=TREETS`;
+                    }/api/biz/organization/query/export?access_token=${localStorage.getItem(
+                      'access_token',
+                    )}&orgfrom=TREETS`;
                 }}
               >
                 导出
               </Button>
-              {selectedRows.length > 0 && (
+              {/* <Upload {...uploadprops}>
+                <Button type="primary">
+                  <Icon type="import" /> 导入
+                      </Button>
+              </Upload>
+              <Button
+                icon="download"
+                type="primary"
+                onClick={() => {
+                  window.location.href = `${
+                    require('@/../config.json').apiHost
+                    }/assets/upload/template/organization_import_template.xls`;
+                }}
+              >
+                导入模板下载
+              </Button> */}
+              {/* {selectedRows.length > 0 && (
                 <span>
                   <Button type="danger" onClick={() => this.handleMenuClick({ key: 'remove' })}>
                     批量删除
                   </Button>
                 </span>
-              )}
+              )} */}
             </div>
             <Row gutter={16}>
               <Col span={12}>

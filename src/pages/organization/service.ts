@@ -30,6 +30,16 @@ export async function query(data: {
   });
 }
 
+// 根据条件导出组织机构报表
+export async function organizationExport(data: {
+  orgfrom: 'TREETS' | 'CHECKIN'
+}) {
+  return request('/api/biz/organization/query/export', {
+    data,
+    method: 'POST'
+  });
+}
+
 export async function remove(ids: string[]) {
   return request(`/api/biz/organization/${ids}`, {
     method: 'DELETE',

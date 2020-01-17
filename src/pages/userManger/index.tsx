@@ -1,4 +1,4 @@
-import { Button, Card, Col, Divider, Form, Input, Row, message, Select } from 'antd';
+import { Button, Card, Col, Divider, Form, Input, Row, message, Select, Upload, Icon } from 'antd';
 import React, { Component, Fragment } from 'react';
 
 import { Dispatch, Action } from 'redux';
@@ -375,8 +375,8 @@ class TableList extends Component<TableListProps, TableListState> {
                     console.log(e);
                   }}
                 >
-                  <Select.Option value="TREETS">报到</Select.Option>
-                  <Select.Option value="CHECKIN">街道</Select.Option>
+                  <Select.Option value="CHECKIN">报到</Select.Option>
+                  <Select.Option value="TREETS">街道</Select.Option>
                 </Select>,
               )}
             </FormItem>
@@ -418,6 +418,24 @@ class TableList extends Component<TableListProps, TableListState> {
       handleUpdateModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
     };
+
+    const uploadprops = {
+      name: 'file',
+      action: `/api/biz/user/import`,
+      // headers: {
+      //   Authorization: `Bearer ${JSON.parse(localStorage.getItem('access_token'))}`
+      // },
+      showUploadList: false,
+      onChange(info: any) {
+        if (info.file.status === 'uploading') {
+        }
+        if (info.file.status === 'done') {
+          message.success(`${info.file.name} 文件上传成功`);
+        } else if (info.file.status === 'error') {
+          message.error(`${info.file.response.message}`);
+        }
+      },
+    };
     return (
       <PageHeaderWrapper>
         <Card bordered={false}>
@@ -440,6 +458,22 @@ class TableList extends Component<TableListProps, TableListState> {
               >
                 导出
               </Button>
+              {/* <Upload {...uploadprops}>
+                <Button type="primary">
+                  <Icon type="import" /> 导入
+                      </Button>
+              </Upload>
+              <Button
+                icon="download"
+                type="primary"
+                onClick={() => {
+                  window.location.href = `${
+                    require('@/../config.json').apiHost
+                    }/assets/upload/template/user_import_template.xls`;
+                }}
+              >
+                导入模板下载
+              </Button> */}
               {selectedRows.length > 0 && (
                 <span>
                   <Button type="danger" onClick={() => this.handleMenuClick({ key: 'remove' })}>

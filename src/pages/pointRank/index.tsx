@@ -115,11 +115,10 @@ class TableList extends Component<TableListProps, TableListState> {
   ) => {
     const { dispatch } = this.props;
     const { formValues } = this.state;
-
     const params: Partial<TableListParams> = {
+      ...formValues,
       pageNo: pagination.current,
       pageSize: pagination.pageSize,
-      ...formValues,
     };
 
     dispatch({

@@ -356,7 +356,7 @@ class TableList extends Component<TableListProps, TableListState> {
                   }}
                 >
                   <Select.Option value="CPC">党员</Select.Option>
-                  <Select.Option value="MASS">群众</Select.Option>
+                  <Select.Option value="MASSES">群众</Select.Option>
                   <Select.Option value="ORG_APPLY">报到组织</Select.Option>
                   <Select.Option value="ORG_TREETS">街道组织</Select.Option>
                 </Select>

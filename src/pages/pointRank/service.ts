@@ -13,7 +13,10 @@ export async function query(params: {
   pageNo?: number;
 }) {
   return request(`/api/biz/desktop/board`, {
-    params
+    params: {
+      boardtype: 'CHECKIN_ORGANIZATION',
+      ...params
+    }
   });
 }
 

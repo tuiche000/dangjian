@@ -43,10 +43,11 @@ const Model: ModelType = {
   effects: {
     *fetch({ payload }, { call, put }) {
       payload = {
-        partyType: "CPC",
+        // partyType: "CPC",
         ...payload,
         orgfrom: 'CHECKIN'
       }
+      console.log(query, payload)
       const response: ResParams<TableListData> = yield call(query, payload);
       yield put({
         type: 'save',

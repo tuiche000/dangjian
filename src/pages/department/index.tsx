@@ -1,4 +1,4 @@
-import { Button, Card, Col, Divider, Form, Input, Row, message, Upload, Icon } from 'antd';
+import { Button, Card, Col, Divider, Form, Input, Row, message, Upload, Icon, Table, Select } from 'antd';
 import React, { Component, Fragment } from 'react';
 
 import { Dispatch, Action } from 'redux';
@@ -8,10 +8,10 @@ import { SorterResult } from 'antd/es/table';
 import { connect } from 'dva';
 import { StateType } from './model';
 import CreateForm from './components/CreateForm';
-import User from './user/index';
-import StandardTable, { StandardTableColumnProps } from '@/components/StandardTable';
+// import User from './user/index';
 import { TableListItem, TableListPagination, TableListParams, AddParams } from './data.d';
-import { user_node } from './service';
+import { userQuery } from './service';
+import Member from './user/member'
 
 import styles from './style.less';
 
@@ -44,6 +44,7 @@ interface TableListState {
   type: 'add' | 'updata';
   pageNo: number;
   pageSize: number;
+  curOrganizationName: string;
 }
 
 /* eslint react/no-multi-comp:0 */
@@ -74,6 +75,7 @@ class TableList extends Component<TableListProps, TableListState> {
     pageNo: 1,
     pageSize: 10,
     userList: [],
+    curOrganizationName: ''
   };
   childrenColumnName: StandardTableColumnProps[] = [
     {
@@ -111,16 +113,33 @@ class TableList extends Component<TableListProps, TableListState> {
   ];
   columns: StandardTableColumnProps[] = [
     {
-      title: '名字',
+      title: '组织名称',
       dataIndex: 'name',
       render: (text, record) => {
         return <a onClick={() => this.POST_user_node(record)}>{text}</a>;
       },
     },
     {
-      title: '所属单位',
-      dataIndex: 'departmentName',
+      title: '组织类型',
+      dataIndex: 'companyType',
+      render: (text) => {
+        if (text=='PARTY') return <span>党建工作协调委员会</span>
+        if (text=='ARC_PARTY') return <span>建筑企业党建工作协调委员会</span>
+      }
     },
+    {
+      title: '党组织联络人',
+      dataIndex: 'contactor',
+    },
+    {
+      title: '联系电话',
+      dataIndex: 'callphone',
+    },
+    {
+      title: '报到时间',
+      dataIndex: 'checkdate',
+    },
+ 
     // {
     //   title: '层级',
     //   dataIndex: 'level',
@@ -134,16 +153,16 @@ class TableList extends Component<TableListProps, TableListState> {
     //   // mark to display a total number
     //   needTotal: true,
     // },
-    {
-      title: '操作',
-      render: (text, record) => (
-        <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleDel(record.id)}>删除</a>
-        </Fragment>
-      ),
-    },
+    // {
+    //   title: '操作',
+    //   render: (text, record) => (
+    //     <Fragment>
+    //       <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
+    //       <Divider type="vertical" />
+    //       <a onClick={() => this.handleDel(record.id)}>删除</a>
+    //     </Fragment>
+    //   ),
+    // },
   ];
 
   componentDidMount() {
@@ -151,12 +170,12 @@ class TableList extends Component<TableListProps, TableListState> {
   }
 
   async POST_user_node(record) {
-    const res = await user_node(record.id, {
-      flag: record.departmentId ? false : true,
-    });
-    // console.log(res)
+    console.log(record)
+    const res = await userQuery(record.id);
+    console.log(res)
     this.setState({
-      userList: res.data,
+      curOrganizationName: record.name,
+      userList: res.data.result,
     });
   }
 
@@ -306,6 +325,51 @@ class TableList extends Component<TableListProps, TableListState> {
     });
   };
 
+  renderSimpleForm() {
+    const { form } = this.props;
+    const { getFieldDecorator } = form;
+    return (
+      <Form onSubmit={this.handleSearch} layout="inline">
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={8} sm={24}>
+            <FormItem label="关键字">
+              {getFieldDecorator('keyword')(<Input placeholder="输入党组织名称" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="报到类型">
+              {getFieldDecorator('partyType', {
+              })(
+                <Select
+                  // mode="multiple"
+                  style={{ width: '100%' }}
+                  placeholder="请选择"
+                  onChange={e => {
+                    console.log(e);
+                  }}
+                >
+                  <Select.Option value="PTY_COM">党委</Select.Option>
+                  <Select.Option value="PTY_BRANCH">党总支</Select.Option>
+                  <Select.Option value="PTY_SUBBRANCH">党支部</Select.Option>
+                </Select>,
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <span className={styles.submitButtons}>
+              <Button type="primary" htmlType="submit">
+                查询
+              </Button>
+              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                重置
+              </Button>
+            </span>
+          </Col>
+        </Row>
+      </Form>
+    );
+  }
+
   handleUpdate = (fields: AddParams) => {
     const { dispatch } = this.props;
     dispatch({
@@ -359,20 +423,20 @@ class TableList extends Component<TableListProps, TableListState> {
       <PageHeaderWrapper>
         <Card bordered={false}>
           <div className={styles.tableList}>
-            {/* <div className={styles.tableListForm}>{this.renderForm()}</div> */}
+            <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+              {/* <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
-              </Button>
+              </Button> */}
               <Button
                 icon="export"
                 type="primary"
                 onClick={() => {
                   window.location.href = `${
                     require('@/../config.json').apiHost
-                  }/api/biz/organization/query/export?access_token=${localStorage.getItem(
-                    'access_token',
-                  )}&orgfrom=CHECKIN`;
+                    }/api/biz/organization/query/export?access_token=${localStorage.getItem(
+                      'access_token',
+                    )}&orgfrom=CHECKIN`;
                 }}
               >
                 导出
@@ -401,43 +465,30 @@ class TableList extends Component<TableListProps, TableListState> {
                 </span>
               )} */}
             </div>
-            <Row gutter={16}>
-              <Col span={12}>
-                <StandardTable
-                  rowKey="id"
-                  selectedRows={selectedRows}
-                  loading={loading}
-                  data={data}
-                  title={() => {
-                    return <div>组织列表</div>;
-                  }}
-                  scroll={{ x: 800, y: 300 }}
-                  columns={this.columns}
-                  onSelectRow={this.handleSelectRows}
-                  onChange={this.handleStandardTableChange}
-                />
-              </Col>
-              <Col span={12}>
-                <StandardTable
-                  rowKey="id"
-                  // selectedRows={selectedRows}
-                  // loading={loading}
-                  data={{
-                    list: userList,
-                  }}
-                  scroll={{ x: 1000, y: 500 }}
-                  title={() => {
-                    return <div>成员列表</div>;
-                  }}
-                  columns={this.childrenColumnName}
-                  // onSelectRow={this.handleSelectRows}
-                  onChange={this.handleStandardTableChange}
-                />
-              </Col>
-            </Row>
+            {/* <Row><StandardTable
+              rowKey="id"
+              selectedRows={selectedRows}
+              loading={loading}
+              data={data}
+              title={() => {
+                return <div>组织列表</div>;
+              }}
+              scroll={{ x: 800, y: 300 }}
+              columns={this.columns}
+              onSelectRow={this.handleSelectRows}
+              onChange={this.handleStandardTableChange}
+            /></Row> */}
+            <div>
+              <Table columns={this.columns} bordered dataSource={data.list} pagination={{
+                defaultPageSize: 6
+              }} />
+            </div>
+            <Divider />
+            {/* <User title={this.state.curOrganizationName} tableData={userList} /> */}
+            <Member title={this.state.curOrganizationName} data={userList} />
           </div>
         </Card>
-        <CreateForm {...parentMethods} hasVal={false} modalVisible={modalVisible} />
+        {/* <CreateForm {...parentMethods} hasVal={false} modalVisible={modalVisible} />
         {type == 'updata' ? (
           <CreateForm
             {...updateMethods}
@@ -445,7 +496,7 @@ class TableList extends Component<TableListProps, TableListState> {
             modalVisible={updateModalVisible}
             values={stepFormValues}
           />
-        ) : null}
+        ) : null} */}
       </PageHeaderWrapper>
     );
   }

@@ -24,7 +24,10 @@ export async function query(params: TableListParams) {
     params: {
       pageNo: params.pageNo
     },
-    data: params,
+    data: {
+      ...params,
+      organizationFrom: 'TREETS'
+    },
     method: 'POST',
   });
 }

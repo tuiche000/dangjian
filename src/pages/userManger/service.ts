@@ -23,6 +23,10 @@ export async function status(params: { id: string; enabled: boolean }) {
 export async function query(params: TableListParams) {
   return request('/api/biz/user/query', {
     data: params,
+    params: {
+      pageSize: params.pageSize,
+      pageNo: params.pageNo
+    },
     method: 'POST',
   });
 }

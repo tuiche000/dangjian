@@ -19,12 +19,15 @@ export async function status(params: {
   });
 }
 
-export async function query(params: TableListParams) {
+export async function query(data: any) {
   return request('/api/biz/user/query', {
     params: {
-      pageNo: params.pageNo
+      pageSize: 999
     },
-    data: params,
+    data: {
+      ...data,
+      organizationFrom: 'CHECKIN'
+    },
     method: 'POST',
   });
 }

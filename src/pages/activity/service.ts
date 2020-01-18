@@ -92,6 +92,10 @@ export async function status(params: {
 export async function query(data: TableListParams) {
   return request('/api/biz/activity/query', {
     data,
+    params: {
+      pageSize: data.pageSize,
+      pageNo: data.pageNo
+    },
     method: 'POST'
   });
 }

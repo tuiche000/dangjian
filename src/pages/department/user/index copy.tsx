@@ -1,4 +1,4 @@
-import { Button, Card, Col, Divider, Form, Input, Row, message, Upload, Icon, Table, Select } from 'antd';
+import { Button, Card, Col, Divider, Form, Input, Row, message, Select } from 'antd';
 import React, { Component, Fragment } from 'react';
 
 import { Dispatch, Action } from 'redux';
@@ -8,10 +8,9 @@ import { SorterResult } from 'antd/es/table';
 import { connect } from 'dva';
 import { StateType } from './model';
 import CreateForm from './components/CreateForm';
-// import User from './user/index';
+import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
 import { TableListItem, TableListPagination, TableListParams, AddParams } from './data.d';
-import { userQuery } from './service';
-import Member from './user/member'
+import { Common_Enum } from '@/services/common';
 
 import styles from './style.less';
 
@@ -24,44 +23,43 @@ const getValue = (obj: { [x: string]: string[] }) =>
 interface TableListProps extends FormComponentProps {
   dispatch: Dispatch<
     Action<
-      | 'namespace_organization/add'
-      | 'namespace_organization/fetch'
-      | 'namespace_organization/remove'
-      | 'namespace_organization/update'
+      | 'namespace_department_user/add'
+      | 'namespace_department_user/fetch'
+      | 'namespace_department_user/remove'
+      | 'namespace_department_user/update'
     >
   >;
   loading: boolean;
-  namespace_organization: StateType;
+  namespace_department_user: StateType;
 }
 
 interface TableListState {
-  userList: any[];
   modalVisible: boolean;
   updateModalVisible: boolean;
   selectedRows: TableListItem[];
   formValues: { [key: string]: string };
   stepFormValues: Partial<TableListItem>;
   type: 'add' | 'updata';
+  types: { [key: string]: string };
   pageNo: number;
   pageSize: number;
-  curOrganizationName: string;
 }
 
 /* eslint react/no-multi-comp:0 */
 @connect(
   ({
-    namespace_organization,
+    namespace_department_user,
     loading,
   }: {
-    namespace_organization: StateType;
+    namespace_department_user: StateType;
     loading: {
       models: {
         [key: string]: boolean;
       };
     };
   }) => ({
-    namespace_organization,
-    loading: loading.models.namespace_organization,
+    namespace_department_user,
+    loading: loading.models.namespace_department_user,
   }),
 )
 class TableList extends Component<TableListProps, TableListState> {
@@ -72,12 +70,12 @@ class TableList extends Component<TableListProps, TableListState> {
     formValues: {},
     stepFormValues: {},
     type: 'add',
+    types: {},
     pageNo: 1,
     pageSize: 10,
-    userList: [],
-    curOrganizationName: ''
   };
-  childrenColumnName: StandardTableColumnProps[] = [
+
+  columns: StandardTableColumnProps[] = [
     {
       title: '用户名',
       dataIndex: 'username',
@@ -99,82 +97,42 @@ class TableList extends Component<TableListProps, TableListState> {
       dataIndex: 'total',
     },
     // {
-    //   title: '操作',
-    //   fixed: 'right',
-    //   width: 150,
-    //   render: (text, record) => (
-    //     <Fragment>
-    //       <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
-    //       <Divider type="vertical" />
-    //       <a onClick={() => this.handleDel(record)}>{record.enabled ? '停用' : '启用'}</a>
-    //     </Fragment>
-    //   ),
-    // },
-  ];
-  columns: StandardTableColumnProps[] = [
-    {
-      title: '组织名称',
-      dataIndex: 'name',
-      render: (text, record) => {
-        return <a onClick={() => this.POST_user_node(record)}>{text}</a>;
-      },
-    },
-    {
-      title: '组织类型',
-      dataIndex: 'companyType',
-      render: (text) => {
-        if (text=='PARTY') return <span>党建工作协调委员会</span>
-        if (text=='ARC_PARTY') return <span>建筑企业党建工作协调委员会</span>
-      }
-    },
-    {
-      title: '党组织联络人',
-      dataIndex: 'contactor',
-    },
-    {
-      title: '联系电话',
-      dataIndex: 'callphone',
-    },
-    {
-      title: '报到时间',
-      dataIndex: 'checkdate',
-    },
- 
-    // {
-    //   title: '层级',
-    //   dataIndex: 'level',
+    //   title: '报到类型',
+    //   dataIndex: 'partyType',
+    //   render: (val: string) => this.state.types[val],
     // },
     // {
-    //   title: '显示顺序',
-    //   dataIndex: 'displayOrder',
-    //   sorter: true,
-    //   align: 'right',
-    //   render: (val: string) => `${val}`,
-    //   // mark to display a total number
-    //   needTotal: true,
+    //   title: '内容',
+    //   dataIndex: 'content',
+    //   render: (val: string) => {
+    //     return <div className="td-overflow">{val}</div>;
+    //   },
     // },
     // {
-    //   title: '操作',
-    //   render: (text, record) => (
-    //     <Fragment>
-    //       <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
-    //       <Divider type="vertical" />
-    //       <a onClick={() => this.handleDel(record.id)}>删除</a>
-    //     </Fragment>
-    //   ),
+    //   title: '发放积分',
+    //   dataIndex: 'point',
     // },
+    {
+      title: '操作',
+      render: (text, record) => (
+        <Fragment>
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.handleDel(record)}>{record.enabled ? '停用' : '启用'}</a>
+        </Fragment>
+      ),
+    },
   ];
 
   componentDidMount() {
     this.handleQuery();
+    this.fetchCommon_Enum('PARTY_TYPE');
   }
 
-  async POST_user_node(record) {
-    const res = await userQuery(record.id);
-    // console.log(res)
+  async fetchCommon_Enum(name: string) {
+    const res: ResParams<{ [propName: string]: string }> = await Common_Enum(name);
     this.setState({
-      curOrganizationName: record.name,
-      userList: res.data.result,
+      types: res.data,
     });
   }
 
@@ -193,7 +151,7 @@ class TableList extends Component<TableListProps, TableListState> {
     };
 
     dispatch({
-      type: 'namespace_organization/fetch',
+      type: 'namespace_department_user/fetch',
       payload: params,
     });
   };
@@ -205,7 +163,7 @@ class TableList extends Component<TableListProps, TableListState> {
       formValues: {},
     });
     dispatch({
-      type: 'namespace_organization/fetch',
+      type: 'namespace_department_user/fetch',
       payload: {},
     });
   };
@@ -220,7 +178,7 @@ class TableList extends Component<TableListProps, TableListState> {
         let arr = selectedRows.map(row => row.id);
         let ids = arr.join();
         dispatch({
-          type: 'namespace_organization/remove',
+          type: 'namespace_department_user/remove',
           payload: ids,
           callback: (res: ResParams2) => {
             if (res.code === '0') {
@@ -238,11 +196,14 @@ class TableList extends Component<TableListProps, TableListState> {
     }
   };
 
-  handleDel = (id: number): void => {
+  handleDel = (record: TableListItem): void => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'namespace_organization/remove',
-      payload: id,
+      type: 'namespace_department_user/remove',
+      payload: {
+        id: record.id,
+        enabled: !record.enabled
+      },
       callback: (res: ResParams2) => {
         if (res.code === '0') {
           message.success('删除成功');
@@ -275,10 +236,7 @@ class TableList extends Component<TableListProps, TableListState> {
         formValues: values,
       });
 
-      dispatch({
-        type: 'namespace_organization/fetch',
-        payload: values,
-      });
+      this.handleQuery(values)
     });
   };
 
@@ -288,7 +246,8 @@ class TableList extends Component<TableListProps, TableListState> {
     });
   };
 
-  handleUpdateModalVisible = (flag?: boolean, record?: TableListItem) => {
+  handleUpdateModalVisible = (flag?: boolean, record?: AddParams) => {
+    console.log(flag);
     this.setState({
       updateModalVisible: !!flag,
       stepFormValues: record || {},
@@ -300,7 +259,7 @@ class TableList extends Component<TableListProps, TableListState> {
     const { dispatch } = this.props;
     const { pageNo, pageSize } = this.state;
     dispatch({
-      type: 'namespace_organization/fetch',
+      type: 'namespace_department_user/fetch',
       payload: {
         pageNo,
         pageSize,
@@ -312,7 +271,7 @@ class TableList extends Component<TableListProps, TableListState> {
   handleAdd = (fields: AddParams) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'namespace_organization/add',
+      type: 'namespace_department_user/add',
       payload: fields,
       callback: (response: ResParams2) => {
         if (response.code === '0') {
@@ -324,35 +283,61 @@ class TableList extends Component<TableListProps, TableListState> {
     });
   };
 
+  handleUpdate = (fields: AddParams) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'namespace_department_user/update',
+      payload: fields,
+      callback: (res: ResParams2) => {
+        message.success('修改成功');
+        this.handleUpdateModalVisible();
+        this.handleQuery();
+      },
+    });
+  };
+
   renderSimpleForm() {
     const { form } = this.props;
+    const { types } = this.state;
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="关键字">
-              {getFieldDecorator('keyword')(<Input placeholder="输入党组织名称" />)}
+              {getFieldDecorator('keyword')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="报到类型">
               {getFieldDecorator('partyType', {
+                initialValue: 'CPC'
               })(
-                <Select
-                  // mode="multiple"
-                  style={{ width: '100%' }}
-                  placeholder="请选择"
-                  onChange={e => {
-                    console.log(e);
-                  }}
-                >
-                  <Select.Option value="PTY_COM">党委</Select.Option>
-                  <Select.Option value="PTY_BRANCH">党总支</Select.Option>
-                  <Select.Option value="PTY_SUBBRANCH">党支部</Select.Option>
+                <Select style={{ maxWidth: 220 }}>
+                  <Select.Option value="CPC">
+                    党员
+                  </Select.Option>
+                  <Select.Option value="MASSES">
+                    群众
+                  </Select.Option>
                 </Select>,
               )}
             </FormItem>
+            {/* <FormItem label="报到类型">
+              {getFieldDecorator('partyType')(
+                <Select style={{ maxWidth: 220 }}>
+                  {Object.keys(types).length > 0
+                    ? Object.keys(types).map(item => {
+                        return (
+                          <Select.Option key={item} value={item}>
+                            {types[item]}
+                          </Select.Option>
+                        );
+                      })
+                    : null}
+                </Select>,
+              )}
+            </FormItem> */}
           </Col>
           <Col md={8} sm={24}>
             <span className={styles.submitButtons}>
@@ -369,26 +354,17 @@ class TableList extends Component<TableListProps, TableListState> {
     );
   }
 
-  handleUpdate = (fields: AddParams) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'namespace_organization/update',
-      payload: fields,
-      callback: (res: ResParams2) => {
-        message.success('修改成功');
-        this.handleUpdateModalVisible();
-        this.handleQuery();
-      },
-    });
-  };
+  renderForm() {
+    return this.renderSimpleForm();
+  }
 
   render() {
     const {
-      namespace_organization: { data },
+      namespace_department_user: { data },
       loading,
     } = this.props;
 
-    const { type, userList } = this.state;
+    const { type } = this.state;
 
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
 
@@ -400,94 +376,35 @@ class TableList extends Component<TableListProps, TableListState> {
       handleUpdateModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
     };
-
-    const uploadprops = {
-      name: 'file',
-      action: `/api/biz/organization/import`,
-      // headers: {
-      //   Authorization: `Bearer ${JSON.parse(localStorage.getItem('access_token'))}`
-      // },
-      showUploadList: false,
-      onChange(info: any) {
-        if (info.file.status === 'uploading') {
-        }
-        if (info.file.status === 'done') {
-          message.success(`${info.file.name} 文件上传成功`);
-        } else if (info.file.status === 'error') {
-          message.error(`${info.file.response.message}`);
-        }
-      },
-    };
     return (
       <PageHeaderWrapper>
         <Card bordered={false}>
           <div className={styles.tableList}>
-            <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
+            <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              {/* <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
-              </Button> */}
-              <Button
-                icon="export"
-                type="primary"
-                onClick={() => {
-                  window.location.href = `${
-                    require('@/../config.json').apiHost
-                    }/api/biz/organization/query/export?access_token=${localStorage.getItem(
-                      'access_token',
-                    )}&orgfrom=TREETS`;
-                }}
-              >
-                导出
               </Button>
-              {/* <Upload {...uploadprops}>
-                <Button type="primary">
-                  <Icon type="import" /> 导入
-                      </Button>
-              </Upload>
-              <Button
-                icon="download"
-                type="primary"
-                onClick={() => {
-                  window.location.href = `${
-                    require('@/../config.json').apiHost
-                    }/assets/upload/template/organization_import_template.xls`;
-                }}
-              >
-                导入模板下载
-              </Button> */}
-              {/* {selectedRows.length > 0 && (
+              {selectedRows.length > 0 && (
                 <span>
                   <Button type="danger" onClick={() => this.handleMenuClick({ key: 'remove' })}>
                     批量删除
                   </Button>
                 </span>
-              )} */}
+              )}
             </div>
-            {/* <Row><StandardTable
+            <StandardTable
               rowKey="id"
               selectedRows={selectedRows}
               loading={loading}
               data={data}
-              title={() => {
-                return <div>组织列表</div>;
-              }}
-              scroll={{ x: 800, y: 300 }}
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
-            /></Row> */}
-            <div>
-              <Table columns={this.columns} bordered dataSource={data.list} pagination={{
-                defaultPageSize: 6
-              }} />
-            </div>
-            <Divider />
-            {/* <User title={this.state.curOrganizationName} tableData={userList} /> */}
-            <Member title={this.state.curOrganizationName} data={userList} />
+            />
           </div>
         </Card>
-        {/* <CreateForm {...parentMethods} hasVal={false} modalVisible={modalVisible} />
+        <CreateForm {...parentMethods} hasVal={false} modalVisible={modalVisible} />
         {type == 'updata' ? (
           <CreateForm
             {...updateMethods}
@@ -495,7 +412,7 @@ class TableList extends Component<TableListProps, TableListState> {
             modalVisible={updateModalVisible}
             values={stepFormValues}
           />
-        ) : null} */}
+        ) : null}
       </PageHeaderWrapper>
     );
   }

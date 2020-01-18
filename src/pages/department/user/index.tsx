@@ -1,17 +1,17 @@
-import { Button, Card, Col, Divider, Form, Input, Row, message, Select } from 'antd';
-import React, { Component, Fragment } from 'react';
 
-import { Dispatch, Action } from 'redux';
+
+import { Button, Card, Col, Divider, Form, Input, Row, message, Select, Table } from 'antd';
+import React, { Component, Fragment } from 'react';
 import { FormComponentProps } from 'antd/es/form';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
+import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
+import { Dispatch, Action } from 'redux';
 import { SorterResult } from 'antd/es/table';
 import { connect } from 'dva';
 import { StateType } from './model';
 import CreateForm from './components/CreateForm';
-import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
 import { TableListItem, TableListPagination, TableListParams, AddParams } from './data.d';
 import { Common_Enum } from '@/services/common';
-
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -32,7 +32,6 @@ interface TableListProps extends FormComponentProps {
   loading: boolean;
   namespace_department_user: StateType;
 }
-
 interface TableListState {
   modalVisible: boolean;
   updateModalVisible: boolean;
@@ -43,6 +42,7 @@ interface TableListState {
   types: { [key: string]: string };
   pageNo: number;
   pageSize: number;
+  members: any[];
 }
 
 /* eslint react/no-multi-comp:0 */
@@ -73,56 +73,8 @@ class TableList extends Component<TableListProps, TableListState> {
     types: {},
     pageNo: 1,
     pageSize: 10,
+    members: [],
   };
-
-  columns: StandardTableColumnProps[] = [
-    {
-      title: '用户名',
-      dataIndex: 'username',
-    },
-    {
-      title: '名字',
-      dataIndex: 'name',
-    },
-    {
-      title: '电话',
-      dataIndex: 'phone',
-    },
-    {
-      title: '单位',
-      dataIndex: 'departmentName',
-    },
-    {
-      title: '积分',
-      dataIndex: 'total',
-    },
-    // {
-    //   title: '报到类型',
-    //   dataIndex: 'partyType',
-    //   render: (val: string) => this.state.types[val],
-    // },
-    // {
-    //   title: '内容',
-    //   dataIndex: 'content',
-    //   render: (val: string) => {
-    //     return <div className="td-overflow">{val}</div>;
-    //   },
-    // },
-    // {
-    //   title: '发放积分',
-    //   dataIndex: 'point',
-    // },
-    {
-      title: '操作',
-      render: (text, record) => (
-        <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleDel(record)}>{record.enabled ? '停用' : '启用'}</a>
-        </Fragment>
-      ),
-    },
-  ];
 
   componentDidMount() {
     this.handleQuery();
@@ -221,7 +173,6 @@ class TableList extends Component<TableListProps, TableListState> {
 
   handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-
     const { dispatch, form } = this.props;
 
     form.validateFields((err, fieldsValue) => {
@@ -305,13 +256,13 @@ class TableList extends Component<TableListProps, TableListState> {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="关键字">
-              {getFieldDecorator('keyword')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('keyword')(<Input placeholder="输入姓名" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="报到类型">
               {getFieldDecorator('partyType', {
-                initialValue: 'CPC'
+                // initialValue: 'CPC'
               })(
                 <Select style={{ maxWidth: 220 }}>
                   <Select.Option value="CPC">
@@ -359,14 +310,9 @@ class TableList extends Component<TableListProps, TableListState> {
   }
 
   render() {
-    const {
-      namespace_department_user: { data },
-      loading,
-    } = this.props;
+    const { tableData, title, namespace_department_user: { data }, loading } = this.props
 
-    const { type } = this.state;
-
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
+    const { type, selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
 
     const parentMethods = {
       handleAdd: this.handleAdd,
@@ -376,8 +322,53 @@ class TableList extends Component<TableListProps, TableListState> {
       handleUpdateModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
     };
+
+    const columns = [
+      {
+        title: '姓名',
+        dataIndex: 'name',
+      },
+      {
+        title: '人员类型',
+        dataIndex: 'partyType',
+      },
+      {
+        title: '所属组织',
+        dataIndex: 'organizationName',
+      },
+      {
+        title: '所属单位',
+        dataIndex: 'departmentName',
+      },
+
+      {
+        title: '手机号',
+        dataIndex: 'phone',
+      },
+
+      // {
+      //   title: '报到时间',
+      //   dataIndex: 'total',
+      // },
+      // {
+      //   title: '兴趣爱好',
+      //   dataIndex: 'total',
+      // },
+      {
+        title: '操作',
+        fixed: 'right',
+        width: 150,
+        render: (text, record) => (
+          <Fragment>
+            <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
+            <Divider type="vertical" />
+            <a onClick={() => this.handleDel(record)}>{record.enabled ? '停用' : '启用'}</a>
+          </Fragment>
+        ),
+      },
+    ];
     return (
-      <PageHeaderWrapper>
+      <div>
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
@@ -385,35 +376,29 @@ class TableList extends Component<TableListProps, TableListState> {
               <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
               </Button>
-              {selectedRows.length > 0 && (
+              {/* {selectedRows.length > 0 && (
                 <span>
                   <Button type="danger" onClick={() => this.handleMenuClick({ key: 'remove' })}>
                     批量删除
                   </Button>
                 </span>
-              )}
+              )} */}
             </div>
-            <StandardTable
-              rowKey="id"
-              selectedRows={selectedRows}
-              loading={loading}
-              data={data}
-              columns={this.columns}
-              onSelectRow={this.handleSelectRows}
-              onChange={this.handleStandardTableChange}
-            />
+            <Table columns={columns} bordered dataSource={this.state.members.length ? this.state.members : tableData} />
           </div>
         </Card>
         <CreateForm {...parentMethods} hasVal={false} modalVisible={modalVisible} />
-        {type == 'updata' ? (
-          <CreateForm
-            {...updateMethods}
-            hasVal={true}
-            modalVisible={updateModalVisible}
-            values={stepFormValues}
-          />
-        ) : null}
-      </PageHeaderWrapper>
+        {
+          type == 'updata' ? (
+            <CreateForm
+              {...updateMethods}
+              hasVal={true}
+              modalVisible={updateModalVisible}
+              values={stepFormValues}
+            />
+          ) : null
+        }
+      </div>
     );
   }
 }

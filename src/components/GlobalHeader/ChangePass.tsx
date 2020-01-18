@@ -37,16 +37,16 @@ const KaikaForm: React.FC<CreateFormProps> = props => {
           rules: [{ required: true, message: '密码必须4到12位，且不能出现空格', pattern: /^[^\s]{4,12}$/ }],
         })(<Input.Password placeholder="请输入原密码" />)}
       </FormItem> */}
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="新密码">
-        {form.getFieldDecorator('password', {
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="原密码">
+        {form.getFieldDecorator('oldpassword', {
           rules: [{ required: true, message: '密码必须1到12位，且不能出现空格', pattern: /^[^\s]{1,12}$/ }],
         })(<Input.Password placeholder="请输入新密码" />)}
       </FormItem>
-      {/* <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="确认密码">
-        {form.getFieldDecorator('rePassword', {
-          rules: [{ required: true, message: '密码必须4到12位，且不能出现空格', pattern: /^[^\s]{4,12}$/ }],
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="新密码">
+        {form.getFieldDecorator('newpassword', {
+          rules: [{ required: true, message: '密码必须1到12位，且不能出现空格', pattern: /^[^\s]{1,12}$/ }],
         })(<Input.Password placeholder="请再次输入新密码" />)}
-      </FormItem> */}
+      </FormItem>
     </Modal>
   );
 };

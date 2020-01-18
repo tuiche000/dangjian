@@ -187,7 +187,7 @@ class TableList extends Component<TableListProps, TableListState> {
                 </Menu.Item>
                 <Menu.Item>
                   <a onClick={() => this.handleDrawerVisible(true, record, 'check')}>
-                    签到/签退记录
+                    签到记录
                   </a>
                 </Menu.Item>
                 <Menu.Item>

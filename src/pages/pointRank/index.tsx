@@ -284,8 +284,10 @@ class TableList extends Component<TableListProps, TableListState> {
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="报到类型">
-              {getFieldDecorator('boardtype')(
+            <FormItem label="积分类型">
+              {getFieldDecorator('boardtype', {
+                initialValue: 'CHECKIN_ORGANIZATION'
+              })(
                 <Select style={{ maxWidth: 220 }}>
                   <Select.Option value="CHECKIN_ORGANIZATION">
                     组织排名

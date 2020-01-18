@@ -35,12 +35,9 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
     password: string;
   }) => {
     const { currentUser } = this.props;
-    request('/api/biz/user', {
-      method: 'PUT',
-      data: {
-        ...currentUser,
-        ...fieldsValue
-      }
+    console.log(currentUser)
+    request(`/api/biz/user/${currentUser.id}/password`, {
+      params: fieldsValue
     }).then((res: ResParams2) => {
       if (res.code == '0') {
         message.success('修改成功')

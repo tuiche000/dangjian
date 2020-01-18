@@ -11,8 +11,6 @@ export async function query(params: {
   type: 'CHECKIN_ORGANIZATION' | 'CHECKIN_PERSONAL',
   pageSize?: number;
   pageNo?: number;
-} = {
-  type: 'CHECKIN_ORGANIZATION'
 }) {
   return request(`/api/biz/desktop/board`, {
     params

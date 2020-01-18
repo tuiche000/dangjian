@@ -26,6 +26,7 @@ export async function query(data: TableListParams) {
       pageNo: data.pageNo,
     },
     data: {
+      partyType: 'CPC',
       ...data,
     },
   });

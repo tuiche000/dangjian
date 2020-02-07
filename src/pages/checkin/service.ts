@@ -12,6 +12,12 @@ export async function audit(params: {
   });
 }
 
+export async function currentdep() {
+  return request(`/api/biz/department/currentdep`, {
+    method: 'GET',
+  });
+}
+
 export async function detail(id: string) {
   return request(`/api/biz/checkin/${id}`, {
     method: 'GET',

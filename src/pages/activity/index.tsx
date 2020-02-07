@@ -12,6 +12,7 @@ import {
   Icon,
   Menu,
   Popconfirm,
+  Modal,
 } from 'antd';
 import React, { Component, Fragment } from 'react';
 
@@ -50,6 +51,7 @@ interface TableListState {
   modalVisible: boolean;
   updateModalVisible: boolean;
   noticeModalVisible: boolean;
+  visible: boolean;
   drawerVisible: boolean;
   selectedRows: TableListItem[];
   formValues: { [key: string]: string };
@@ -84,6 +86,7 @@ class TableList extends Component<TableListProps, TableListState> {
     modalVisible: false,
     updateModalVisible: false,
     noticeModalVisible: false,
+    visible: false, // 二维码弹窗
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
@@ -152,7 +155,7 @@ class TableList extends Component<TableListProps, TableListState> {
                 }
 
                 <Menu.Item>
-                  <Popover
+                  {/* <Popover
                     content={
                       this.state.qrcode ? (
                         <div style={{ width: '100px', height: '100px' }}>
@@ -167,10 +170,11 @@ class TableList extends Component<TableListProps, TableListState> {
                     trigger="click"
                   >
                     <a onClick={() => this.downQr(record)}>报名二维码</a>
-                  </Popover>
+                  </Popover> */}
+                  <a onClick={() => this.downQr(record)}>报名二维码</a>
                 </Menu.Item>
                 <Menu.Item>
-                  <Popover
+                  {/* <Popover
                     content={
                       <div style={{ width: '100px', height: '100px' }}>
                         <img
@@ -183,7 +187,8 @@ class TableList extends Component<TableListProps, TableListState> {
                     trigger="click"
                   >
                     <a onClick={() => this.downQr(record, 'CHECKIN')}>签到二维码</a>
-                  </Popover>
+                  </Popover> */}
+                  <a onClick={() => this.downQr(record, 'CHECKIN')}>签到二维码</a>
                 </Menu.Item>
                 <Menu.Item>
                   <a onClick={() => this.handleDrawerVisible(true, record, 'check')}>
@@ -200,6 +205,26 @@ class TableList extends Component<TableListProps, TableListState> {
               更多 <Icon type="down" />
             </a>
           </Dropdown>
+          <Modal
+            // title="Basic Modal"
+            visible={this.state.visible}
+            footer={null}
+            width={150}
+          // onOk={this.handleOk}
+          onCancel={() => {
+            this.setState({
+              visible: false
+            })
+          }}
+          >
+            <div style={{ width: '100px', height: '100px' }}>
+              <img
+                src={this.state.qrcode}
+                style={{ width: '100px', height: '100px' }}
+                alt=""
+              />
+            </div>
+          </Modal>
         </Fragment>
       ),
     },
@@ -233,6 +258,7 @@ class TableList extends Component<TableListProps, TableListState> {
     console.log(res);
     let url = URL.createObjectURL(res);
     this.setState({
+      visible: true,
       qrcode: url,
     });
   }

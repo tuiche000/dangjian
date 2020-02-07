@@ -71,6 +71,16 @@ class Member extends Component {
     });
   };
 
+  componentDidMount() {
+    query({}).then(res => {
+      if (res.code == "0") {
+        this.setState({
+          members: res.data.result,
+        })
+      }
+    })
+  }
+
 
   // handleAdd = (fields: AddParams) => {
   //   const { dispatch } = this.props;

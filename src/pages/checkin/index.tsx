@@ -23,7 +23,7 @@ import { StateType } from './model';
 import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
 import { TableListItem, TableListPagination, TableListParams, AddParams } from './data.d';
 import { Common_Enum } from '@/services/common';
-import { audit } from './service';
+import { audit, currentdep } from './service';
 import DetailDrawer from './components/DetailDrawer';
 import moment from 'moment';
 import styles from './style.less';
@@ -59,6 +59,7 @@ interface TableListState {
   auditType: { [key: string]: string };
   pageNo: number;
   pageSize: number;
+  currentdeps: any[];
 }
 
 /* eslint react/no-multi-comp:0 */
@@ -91,6 +92,7 @@ class TableList extends Component<TableListProps, TableListState> {
     auditType: {},
     pageNo: 1,
     pageSize: 10,
+    currentdeps: [],
   };
 
   columns: StandardTableColumnProps[] = [
@@ -227,8 +229,17 @@ class TableList extends Component<TableListProps, TableListState> {
 
   componentDidMount() {
     this.handleQuery();
+    this.currentdep();
     this.fetchCommon_Enum('PARTY_TYPE');
     this.fetchCommon_Enum('AUDIT_TYPE');
+  }
+
+  async currentdep() {
+    currentdep().then(res => {
+      this.setState({
+        currentdeps: res.data
+      })
+    });
   }
 
   async fetchCommon_Enum(name: string) {
@@ -453,6 +464,29 @@ class TableList extends Component<TableListProps, TableListState> {
                 >
                   <Select.Option value="CPC">党员</Select.Option>
                   <Select.Option value="ORG_APPLY">党组织报到</Select.Option>
+                </Select>,
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="报到单位">
+              {getFieldDecorator('departmentId', {
+              })(
+                <Select
+                  // mode="multiple"
+                  style={{ width: '100%' }}
+                  placeholder="请选择"
+                  onChange={e => {
+                    console.log(e);
+                  }}
+                >
+                  {
+                    this.state.currentdeps.map(item => {
+                      return (
+                        <Select.Option value={item.id}>{item.name}</Select.Option>
+                      )
+                    })
+                  }
                 </Select>,
               )}
             </FormItem>

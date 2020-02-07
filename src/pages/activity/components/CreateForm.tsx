@@ -15,7 +15,7 @@ import {
 import { FormComponentProps } from 'antd/es/form';
 import React, { useState, useEffect } from 'react';
 import { AddParams, TableListItem } from '../data.d';
-import { detail, departmentAll } from '../service';
+import { detail, currentdep } from '../service';
 import moment from 'moment';
 import { Common_Dictionary } from '@/services/common';
 import Quill from '@/components/Quill/index';
@@ -50,7 +50,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
     serviceType,
   } = props;
 
-  const [options, setOptions] = useState();
+  const [options, setOptions] = useState([]);
   const [activeType, setActiveType] = useState();
   const [imageUrl, setImageUrl] = useState();
   const [thumnail, setThumnail] = useState('');
@@ -63,27 +63,28 @@ const CreateForm: React.FC<CreateFormProps> = props => {
   useEffect(() => {
 
     try {
-      departmentAll().then((res: ResParams<TableListItem>) => {
+      currentdep().then((res: ResParams<TableListItem>) => {
         if (res.code == '0') {
           // 递归
-          function recursive(arr: any) {
-            if (arr instanceof Array) {
-              arr.forEach(item => {
-                item.key = item.id;
-                item.title = item.name;
-                item.value = item.id;
-                if (item.children.length) {
-                  item.children = recursive(item.children);
-                } else {
-                  item.children = undefined;
-                }
-              });
-            }
-            return arr;
-          }
-          let list = [];
-          list = recursive(res.data);
-          setOptions(list);
+          // function recursive(arr: any) {
+          //   if (arr instanceof Array) {
+          //     arr.forEach(item => {
+          //       item.key = item.id;
+          //       item.title = item.name;
+          //       item.value = item.id;
+          //       if (item.children.length) {
+          //         item.children = recursive(item.children);
+          //       } else {
+          //         item.children = undefined;
+          //       }
+          //     });
+          //   }
+          //   return arr;
+          // }
+          // let list = [];
+          // list = recursive(res.data);
+          // setOptions(list);
+          setOptions(res.data)
         }
       });
 
@@ -253,7 +254,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           </Select>,
         )}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="活动类型">
+      {/* <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="活动类型">
         {form.getFieldDecorator('activeType', {
           rules: [{ required: true, message: '请选择' }],
           initialValue: info && info.activeType,
@@ -278,23 +279,39 @@ const CreateForm: React.FC<CreateFormProps> = props => {
               )}
           </Select>,
         )}
-      </FormItem>
+      </FormItem> */}
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="发布单位">
         {form.getFieldDecorator('department', {
           rules: [{ required: true, message: '请选择' }],
           initialValue: info && info.department,
         })(
-          <TreeSelect
-            allowClear
+          <Select
+            // mode="multiple"
             style={{ width: '100%' }}
             placeholder="请选择"
-            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-            treeDefaultExpandAll
-            treeData={options}
             onChange={e => {
               console.log(e);
             }}
-          ></TreeSelect>,
+          >
+            {
+              options.map(item => {
+                return (
+                  <Select.Option value={item.id}>{item.name}</Select.Option>
+                )
+              })
+            }
+          </Select>,
+          // <TreeSelect
+          //   allowClear
+          //   style={{ width: '100%' }}
+          //   placeholder="请选择"
+          //   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+          //   treeDefaultExpandAll
+          //   treeData={options}
+          //   onChange={e => {
+          //     console.log(e);
+          //   }}
+          // ></TreeSelect>,
         )}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="乘车路线">
@@ -348,7 +365,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           initialValue: info && info.recommend,
         })(<Switch />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="图片" extra="请上传图片">
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="活动图片" extra="建议活动结束后在此处上传活动图片，将显示在小程序端的活动详情页。">
         {form.getFieldDecorator('backgroundPicture', {
           // rules: [{ required: true, message: '请上传' }],
           // initialValue: info && info.primary,
@@ -404,7 +421,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="缩略图"
-        extra="请上传缩略图"
+        extra="该图片会显示在小程序首页的活动吧缩略图位置"
       >
         {form.getFieldDecorator('backgroundPicture2', {
           // rules: [{ required: true, message: '请上传' }],

@@ -5,6 +5,12 @@ export async function departmentAll() {
   return request('/api/biz/department/all');
 }
 
+export async function currentdep() {
+  return request(`/api/biz/department/currentdep`, {
+    method: 'GET',
+  });
+}
+
 export async function notice(params: { activeId: string; departmentIds?: string }) {
   return request(`/api/biz/activity/notice/${params.activeId}`, {
     method: 'GET',

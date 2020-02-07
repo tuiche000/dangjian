@@ -441,7 +441,7 @@ class TableList extends Component<TableListProps, TableListState> {
               >
                 导出
               </Button>
-              {/* <Upload {...uploadprops}>
+              <Upload {...uploadprops}>
                 <Button type="primary">
                   <Icon type="import" /> 导入
                       </Button>
@@ -456,7 +456,7 @@ class TableList extends Component<TableListProps, TableListState> {
                 }}
               >
                 导入模板下载
-              </Button> */}
+              </Button>
               {/* {selectedRows.length > 0 && (
                 <span>
                   <Button type="danger" onClick={() => this.handleMenuClick({ key: 'remove' })}>

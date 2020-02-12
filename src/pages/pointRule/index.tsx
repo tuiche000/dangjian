@@ -78,13 +78,13 @@ class TableList extends Component<TableListProps, TableListState> {
   };
 
   columns: StandardTableColumnProps[] = [
-    {
-      title: '名字',
-      dataIndex: 'name',
-      render: (text) => {
-        return <span>{this.state.actTypes[text]}</span>
-      }
-    },
+    // {
+    //   title: '名字',
+    //   dataIndex: 'name',
+    //   render: (text) => {
+    //     return <span>{this.state.actTypes[text]}</span>
+    //   }
+    // },
     {
       title: '规则类型',
       dataIndex: 'ruleType',
@@ -114,7 +114,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
   componentDidMount() {
     this.handleQuery();
-    this.fetchCommon_Enum('PARTY_TYPE');
+    this.fetchCommon_Enum('RULE_TYPE');
     this.fetchCommon_Dictionary('PARTY_ACTIVITY_ACTIVETYPE');
   }
 

@@ -84,7 +84,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       }}
       afterClose={() => handleUpdateModalVisible && handleUpdateModalVisible(false)}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="名字">
+      {/* <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="名字">
         {form.getFieldDecorator('name', {
           // rules: [{ required: true, message: '请输入！', min: 2 }],
           initialValue: info && info.name,
@@ -107,7 +107,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
               },
             )}
         </Select>)}
-      </FormItem>
+      </FormItem> */}
       {/* <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="报道类型">
         {form.getFieldDecorator('partyType', {
           rules: [{ required: true, message: '请输入！', min: 2 }],
